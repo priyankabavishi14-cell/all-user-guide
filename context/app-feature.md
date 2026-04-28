@@ -16,4 +16,8 @@
 
 ## History
 
-<!-- History of changes-->
+### 2026-04-28 — Initial Next.js & Tailwind Setup
+- Scaffolded project with `create-next-app`
+- Configured Tailwind CSS
+- Removed default Next.js boilerplate assets (`public/*.svg`)
+- Added `context/` directory with project documentation
