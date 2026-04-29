@@ -1,3 +1,6 @@
-export default function Page() {
-  return <h1>User Guide</h1>;
+import { redirect } from 'next/navigation';
+import { activeProject } from '@/lib/mock-data';
+
+export default function RootPage() {
+  redirect(`/admin/${activeProject.slug}`);
 }

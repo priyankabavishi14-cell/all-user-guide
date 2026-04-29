@@ -1,23 +1,40 @@
 # App Feature
 
-<!-- Feature name & Short description -->
+User Guide Management System — a platform for creating, managing, and displaying structured user guides with separate admin (backend) and public (frontend) experiences.
 
 ## Status
 
-<!-- To Do | In Progress | Done -->
+Completed
 
 ## Goals
 
-<!-- Goals and Requirements -->
+### Admin Dashboard (Project Control Panel)
+- Project-scoped dashboard with top header (logo, project breadcrumb, view live site, user profile)
+- Left sidebar: project switcher, management links (Dashboard, Manage Pages), Create New Page CTA
+- Stats cards: Total Pages count, Guide Setup toggle (welcome screen ON/OFF), Create Page CTA
+- Recently Updated Pages table: Title, Parent, Last Updated, Edit action
+- Responsive: fixed sidebar on desktop, collapsible on mobile
+
+### Frontend Homepage (End-User Guide View)
+- Welcome screen as default landing; togglable from admin dashboard
+- Left sidebar as table of contents showing hierarchical page structure (root + nested sub-pages)
+- Main content area: welcome icon, title, subtitle, Getting Started card with navigation instructions
+- Content fetched dynamically from backend; project-isolated
+- Responsive: fixed sidebar on desktop, collapsible hamburger on mobile
 
 ## Notes
 
-<!-- Any extra notes -->
+- All three screens share the same design system: primary `#5b5ce2`, gradient to `#7c3aed`, background `#f9fafb`, text `#111827`
+- Micro-interactions required: button hover, card elevation, smooth scroll, loading skeletons
+- Switching projects in admin requires re-authentication
+- Only active projects shown on the main dashboard
+- Welcome screen visibility controlled via admin toggle
 
 ## History
 
-### 2026-04-28 — Initial Next.js & Tailwind Setup
-- Scaffolded project with `create-next-app`
-- Configured Tailwind CSS
-- Removed default Next.js boilerplate assets (`public/*.svg`)
-- Added `context/` directory with project documentation
+### 2026-04-29 — Completed Admin Dashboard & Frontend Homepage
+- Scaffolded project with `create-next-app` and configured Tailwind CSS
+- Built Admin Dashboard (`/admin/[slug]`): header with logo/breadcrumb/user profile, left sidebar with project switcher and navigation, stats cards (total pages, welcome screen toggle, create page CTA), recently updated pages table
+- Built Frontend Homepage (`/[slug]`): welcome screen, hierarchical sidebar TOC, main content area with getting started card
+- Root `/` redirects to Admin Dashboard for active project
+- All screens share design system: primary `#5b5ce2`, gradient to `#7c3aed`, background `#f9fafb`, text `#111827`
