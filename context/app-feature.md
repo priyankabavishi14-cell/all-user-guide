@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
@@ -21,6 +21,16 @@ Completed
 - Main content area: welcome icon, title, subtitle, Getting Started card with navigation instructions
 - Content fetched dynamically from backend; project-isolated
 - Responsive: fixed sidebar on desktop, collapsible hamburger on mobile
+
+### Database — Prisma ORM + Neon PostgreSQL
+- Prisma 7 with Neon serverless PostgreSQL
+- Schema models: `User`, `Project`, `Page` (self-referencing hierarchy)
+- All tables use snake_case column names mapped to camelCase in Prisma
+- Unique constraint on `(project_id, slug)` per page; cascade delete on project removal
+- Always use migrations (`prisma migrate dev`) — never direct schema push
+- Development branch for `DATABASE_URL`; separate production branch
+- Prisma client singleton via Neon adapter at `src/lib/prisma.ts`
+- Generated client output at `generated/prisma/` (gitignored)
 
 ## Notes
 
