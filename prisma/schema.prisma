@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Core Models ─────────────────────────────────────────────────────────────
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  phone     String?
+  password  String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  projects  Project[]
+
+  // NextAuth relations
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String?
+  frontendUrl String?  @map("frontend_url")
+  backendUrl  String?  @map("backend_url")
+  isActive             Boolean  @default(true) @map("is_active")
+  welcomeScreenEnabled Boolean  @default(true) @map("welcome_screen_enabled")
+  createdBy            String   @map("created_by")
+  createdAt            DateTime @default(now()) @map("created_at")
+  user         User          @relation(fields: [createdBy], references: [id])
+  pages        Page[]
+  projectUsers ProjectUser[]
+
+  @@index([createdBy])
+  @@map("projects")
+}
+
+model Page {
+  id          String   @id @default(uuid())
+  projectId   String   @map("project_id")
+  title       String
+  slug        String
+  sequence    Int      @default(0)
+  icon        String?
+  parentId    String?  @map("parent_id")
+  description String?
+  content     String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parent          Page?            @relation("PageChildren", fields: [parentId], references: [id])
+  children        Page[]           @relation("PageChildren")
+  pagePermissions PagePermission[]
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+  @@index([parentId])
+  @@index([projectId, sequence])
+  @@map("pages")
+}
+
+// ─── NextAuth Models ──────────────────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refreshToken      String? @map("refresh_token") @db.Text
+  accessToken       String? @map("access_token") @db.Text
+  expiresAt         Int?    @map("expires_at")
+  tokenType         String? @map("token_type")
+  scope             String?
+  idToken           String? @map("id_token") @db.Text
+  sessionState      String? @map("session_state")
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// ─── User Permission Models ───────────────────────────────────────────────────
+
+model ProjectUser {
+  id           String   @id @default(uuid())
+  projectId    String   @map("project_id")
+  name         String
+  email        String
+  password     String
+  role         String   @default("viewer")
+  accessType   String   @default("full") @map("access_type")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  pagePermissions PagePermission[]
+  viewerSessions  ViewerSession[]
+
+  @@unique([projectId, email])
+  @@index([projectId])
+  @@map("project_users")
+}
+
+model PagePermission {
+  id            String      @id @default(uuid())
+  projectUserId String      @map("project_user_id")
+  pageId        String      @map("page_id")
+
+  projectUser   ProjectUser @relation(fields: [projectUserId], references: [id], onDelete: Cascade)
+  page          Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([projectUserId, pageId])
+  @@map("page_permissions")
+}
+
+model ViewerSession {
+  id            String      @id @default(uuid())
+  sessionToken  String      @unique @map("session_token")
+  projectUserId String      @map("project_user_id")
+  expires       DateTime
+
+  projectUser   ProjectUser @relation(fields: [projectUserId], references: [id], onDelete: Cascade)
+
+  @@index([projectUserId])
+  @@map("viewer_sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

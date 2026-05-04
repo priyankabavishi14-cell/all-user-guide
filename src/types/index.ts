@@ -6,6 +6,7 @@ export interface Project {
   frontendUrl: string;
   backendUrl: string;
   isActive: boolean;
+  welcomeScreenEnabled: boolean;
   createdBy: string;
   createdAt: string;
 }
@@ -31,6 +32,17 @@ export interface User {
   email: string;
   phone: string;
   createdAt: string;
+}
+
+export interface ProjectUser {
+  id: string;
+  projectId: string;
+  name: string;
+  email: string;
+  role: 'editor' | 'viewer';
+  accessType: 'full' | 'restricted';
+  createdAt: string;
+  allowedPageIds: string[];
 }
 
 export interface DashboardStats {

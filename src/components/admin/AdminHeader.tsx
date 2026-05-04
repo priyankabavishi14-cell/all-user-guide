@@ -1,8 +1,10 @@
-import type { Project, User } from '@/types';
+import Link from 'next/link'
+import type { Project, User } from '@/types'
+import { logoutAction } from '@/app/admin/actions'
 
 interface Props {
-  project: Project;
-  user: User;
+  project: Project
+  user: User
 }
 
 export default function AdminHeader({ project, user }: Props) {
@@ -13,13 +15,16 @@ export default function AdminHeader({ project, user }: Props) {
         <span className="text-[#d1d5db] shrink-0">/</span>
         <span className="text-[#374151] font-medium truncate">{project.title}</span>
       </div>
+
       <div className="flex items-center gap-3 shrink-0">
-        <a
-          href={`http://${project.frontendUrl}`}
+        <Link
+          href={`/${project.slug}`}
+          target="_blank"
           className="hidden sm:inline-flex text-sm text-[#5b5ce2] border border-[#5b5ce2] px-4 py-1.5 rounded-lg hover:bg-[#ede9fe] transition-colors"
         >
           View Live Site
-        </a>
+        </Link>
+
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5b5ce2] to-[#7c3aed] flex items-center justify-center text-white text-sm font-semibold shrink-0">
             {user.name.charAt(0)}
@@ -29,7 +34,16 @@ export default function AdminHeader({ project, user }: Props) {
             <p className="text-xs text-[#6b7280] mt-0.5">{user.email}</p>
           </div>
         </div>
+
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="text-sm text-[#6b7280] border border-[#e5e7eb] px-3 py-1.5 rounded-lg hover:text-[#ef4444] hover:border-red-200 transition-colors"
+          >
+            Logout
+          </button>
+        </form>
       </div>
     </header>
-  );
+  )
 }

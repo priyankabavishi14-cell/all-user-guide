@@ -1,16 +1,31 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, useTransition } from 'react'
+import Link from 'next/link'
+import { toggleWelcomeScreenAction } from '@/app/admin/actions'
 
 interface Props {
-  totalPages: number;
-  welcomeScreenEnabled: boolean;
-  slug: string;
+  totalPages: number
+  welcomeScreenEnabled: boolean
+  projectId: string
+  slug: string
 }
 
-export default function StatsCards({ totalPages, welcomeScreenEnabled, slug }: Props) {
-  const [welcomeOn, setWelcomeOn] = useState(welcomeScreenEnabled);
+export default function StatsCards({ totalPages, welcomeScreenEnabled, projectId, slug }: Props) {
+  const [welcomeOn, setWelcomeOn] = useState(welcomeScreenEnabled)
+  const [isPending, startTransition] = useTransition()
+
+  function handleToggle() {
+    const next = !welcomeOn
+    setWelcomeOn(next)
+    startTransition(async () => {
+      const result = await toggleWelcomeScreenAction(projectId, next)
+      if (result.error) {
+        // Revert optimistic update on failure
+        setWelcomeOn(!next)
+      }
+    })
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
@@ -25,12 +40,17 @@ export default function StatsCards({ totalPages, welcomeScreenEnabled, slug }: P
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm text-[#374151] font-medium">Welcome Screen</p>
-            <p className="text-xs text-[#6b7280] mt-0.5">Controls default landing experience</p>
+            <p className="text-xs text-[#6b7280] mt-0.5">
+              {welcomeOn
+                ? 'Visitors see the welcome page'
+                : 'Visitors skip to the first page'}
+            </p>
           </div>
           <button
-            onClick={() => setWelcomeOn((prev) => !prev)}
+            onClick={handleToggle}
+            disabled={isPending}
             aria-label="Toggle welcome screen"
-            className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ${
+            className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors disabled:opacity-60 ${
               welcomeOn ? 'bg-[#5b5ce2]' : 'bg-[#d1d5db]'
             }`}
           >
@@ -52,5 +72,5 @@ export default function StatsCards({ totalPages, welcomeScreenEnabled, slug }: P
         <p className="text-sm text-purple-200 mt-1">Add content to your guide</p>
       </Link>
     </div>
-  );
+  )
 }
