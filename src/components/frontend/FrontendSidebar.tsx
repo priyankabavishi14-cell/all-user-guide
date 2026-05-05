@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Page } from '@/types'
+import { isSvgIcon } from '@/components/admin/IconPicker'
 
 interface Props {
   projectSlug: string
@@ -65,7 +66,10 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, on
                         : 'text-[#374151] hover:bg-[#f3f4f6]'
                     }`}
                   >
-                    <span className="shrink-0">{page.icon || '📄'}</span>
+                    {page.icon && isSvgIcon(page.icon)
+                      ? <img src={`/icons/${page.icon}.svg`} alt={page.icon} className="w-4 h-4 shrink-0" />
+                      : <span className="shrink-0">{page.icon || '📄'}</span>
+                    }
                     <span className="truncate">{page.title}</span>
                   </Link>
                   {hasChildren && (
@@ -94,7 +98,10 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, on
                               : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#374151]'
                           }`}
                         >
-                          <span className="shrink-0 text-xs">{child.icon || '📄'}</span>
+                          {child.icon && isSvgIcon(child.icon)
+                            ? <img src={`/icons/${child.icon}.svg`} alt={child.icon} className="w-4 h-4 shrink-0" />
+                            : <span className="shrink-0 text-xs">{child.icon || '📄'}</span>
+                          }
                           <span className="truncate">{child.title}</span>
                         </Link>
                       )

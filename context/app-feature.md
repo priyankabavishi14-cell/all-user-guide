@@ -127,6 +127,7 @@ In Progress
 - Create New Page: after clicking Save Changes, redirect to Manage Pages (not Project Dashboard)
 - Newly created page appears in the list immediately in the correct hierarchy position and sequence order
 - Success feedback on page creation: toast notification (e.g. "Page created successfully")
+- Icon field on Add/Edit Page replaced with a visual SVG icon picker; icons from `public/icons/` (`location`, `sales`, `user`); stored as filename without extension; rendered as `<img>` in table and sidebar with emoji fallback for legacy values
 
 ### Edit Page
 - Entry points: Manage Pages → Actions → Edit button or Edit icon on page listing row
@@ -219,6 +220,12 @@ In Progress
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-05 — Added Icon Picker to Small Changes Spec
+- Added Icon Picker requirement to `context/features/small-changes.md`
+- Replaces free-text Icon input on Add/Edit Page with visual SVG picker
+- Icons from `public/icons/`: `location.svg`, `sales.svg`, `user.svg`
+- Stored as filename without extension; rendered as `<img>` in table + sidebar; emoji fallback for legacy values
 
 ### 2026-05-05 — Added Manage Pages Small Changes Spec
 - Defined Manage Pages small changes spec (`context/features/small-changes.md`)

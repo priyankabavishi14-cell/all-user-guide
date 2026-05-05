@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Project, Page } from '@/types'
 import { createPageAction, type CreatePageState } from './actions'
+import IconPicker from '@/components/admin/IconPicker'
 
 interface Props {
   project: Project
@@ -177,6 +178,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
   const router = useRouter()
   const [viewMode, setViewMode]         = useState<ViewMode>('split')
   const [title, setTitle]               = useState('')
+  const [icon, setIcon]                 = useState('')
   const [content, setContent]           = useState('')
   const [activeHeading, setActiveHeading]     = useState<number | null>(null)
   const [activeStyles, setActiveStyles]       = useState<Set<string>>(new Set())
@@ -392,6 +394,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
       className="min-h-screen bg-[#f9fafb] flex flex-col"
     >
       <input type="hidden" name="title"   value={title} />
+      <input type="hidden" name="icon"    value={icon} />
       <input type="hidden" name="content" value={content} />
 
       {/* ── Header ── */}
@@ -566,12 +569,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
 
           <div>
             <label className="block text-xs font-semibold text-[#374151] mb-1">Icon</label>
-            <input
-              type="text"
-              name="icon"
-              placeholder="e.g. 📄"
-              className="w-full border border-[#e5e7eb] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5b5ce2] transition"
-            />
+            <IconPicker value={icon} onChange={setIcon} />
           </div>
 
           <div>

@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useTransition, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { isSvgIcon } from '@/components/admin/IconPicker'
 import AdminHeader from '@/components/admin/AdminHeader'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import { deletePageAction } from './actions'
@@ -142,7 +143,10 @@ export default function ManagePagesClient({ project, allProjects, user, pages }:
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm">{page.icon || '📄'}</span>
+                {page.icon && isSvgIcon(page.icon)
+                  ? <img src={`/icons/${page.icon}.svg`} alt={page.icon} className="w-5 h-5 shrink-0" />
+                  : <span className="text-sm">{page.icon || '📄'}</span>
+                }
                 <span className="font-medium text-[#111827] text-sm">{page.title}</span>
               </div>
               {page.description && (
