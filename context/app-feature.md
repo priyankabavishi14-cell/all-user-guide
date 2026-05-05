@@ -122,6 +122,12 @@ In Progress
 - Behavior rules: prevent deletion of parent without handling children; unique page slug enforced; sequence order integrity preserved
 - Responsive: sidebar collapses on smaller screens; table scrollable horizontally; actions accessible via dropdown on mobile
 
+### Manage Pages — Small Changes
+- Hierarchy View is active by default every time Manage Pages loads; does not persist last selected view
+- Create New Page: after clicking Save Changes, redirect to Manage Pages (not Project Dashboard)
+- Newly created page appears in the list immediately in the correct hierarchy position and sequence order
+- Success feedback on page creation: toast notification (e.g. "Page created successfully")
+
 ### Edit Page
 - Entry points: Manage Pages → Actions → Edit button or Edit icon on page listing row
 - Opens Edit Page screen with all existing page data pre-filled
@@ -213,6 +219,13 @@ In Progress
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-05 — Added Manage Pages Small Changes Spec
+- Defined Manage Pages small changes spec (`context/features/small-changes.md`)
+- Hierarchy View enabled by default on every Manage Pages load; never persisted
+- Create New Page save redirects to Manage Pages instead of Project Dashboard
+- Newly created page visible immediately in correct hierarchy and sequence position
+- Success toast shown after page creation
 
 ### 2026-05-04 — Added Edit Page Spec
 - Defined Edit Page UI spec (`context/features/edit-page-spec.md`)
