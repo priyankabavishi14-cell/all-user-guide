@@ -9,7 +9,7 @@ interface Props {
 
 export default function AdminHeader({ project, user }: Props) {
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-[#e5e7eb] shrink-0">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3 bg-white border-b border-[#e5e7eb] shrink-0">
       <div className="flex items-center gap-2 min-w-0">
         <span className="font-bold text-[#5b5ce2] shrink-0">AdminConsole</span>
         <span className="text-[#d1d5db] shrink-0">/</span>

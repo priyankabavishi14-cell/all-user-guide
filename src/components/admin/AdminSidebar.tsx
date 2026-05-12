@@ -10,7 +10,7 @@ interface Props {
 
 export default function AdminSidebar({ project, allProjects, activePage }: Props) {
   return (
-    <aside className="w-60 shrink-0 bg-white border-r border-[#e5e7eb] flex flex-col min-h-full">
+    <aside className="w-60 shrink-0 bg-white border-r border-[#e5e7eb] flex flex-col sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
       <div className="p-4 border-b border-[#e5e7eb]">
         <p className="text-xs text-[#6b7280] uppercase font-semibold mb-2 tracking-wide">
           Switch Project

@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useTransition, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { isSvgIcon } from '@/components/admin/IconPicker'
+import { isSvgIcon } from '@/lib/icon-utils'
 import AdminHeader from '@/components/admin/AdminHeader'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import { deletePageAction } from './actions'
@@ -214,7 +214,7 @@ export default function ManagePagesClient({ project, allProjects, user, pages }:
   const rowCount = useHierarchy ? pages.length : flatList.length
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] flex flex-col">
+    <div className="h-screen bg-[#f9fafb] flex flex-col">
       <AdminHeader project={project} user={user} />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar project={project} allProjects={allProjects} activePage="manage-pages" />

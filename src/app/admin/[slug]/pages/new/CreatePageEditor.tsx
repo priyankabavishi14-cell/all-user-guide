@@ -391,7 +391,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
     <form
       id="create-page-form"
       action={formAction}
-      className="min-h-screen bg-[#f9fafb] flex flex-col"
+      className="h-screen bg-[#f9fafb] flex flex-col"
     >
       <input type="hidden" name="title"   value={title} />
       <input type="hidden" name="icon"    value={icon} />

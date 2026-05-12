@@ -101,7 +101,7 @@ export default async function AdminDashboardPage({
   })
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] flex flex-col">
+    <div className="h-screen bg-[#f9fafb] flex flex-col">
       <AdminHeader project={project} user={user} />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar project={project} allProjects={allProjects} />

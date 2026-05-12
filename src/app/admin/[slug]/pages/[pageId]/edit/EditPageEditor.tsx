@@ -391,7 +391,7 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
     <form
       id="edit-page-form"
       action={formAction}
-      className="min-h-screen bg-[#f9fafb] flex flex-col"
+      className="h-screen bg-[#f9fafb] flex flex-col"
     >
       <input type="hidden" name="title"   value={title} />
       <input type="hidden" name="icon"    value={icon} />
@@ -571,7 +571,7 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
           {/* Slug */}
           <div>
             <label className="block text-xs font-semibold text-[#374151] mb-1">
-              Slug (ID)
+              Slug
             </label>
             <input
               type="text"
