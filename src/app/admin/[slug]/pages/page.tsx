@@ -1,0 +1,99 @@
+import { cookies } from 'next/headers'
+import { redirect, notFound } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import { projects as mockProjects, pages as mockPages, currentUser as mockUser } from '@/lib/mock-data'
+import type { Project, Page, User } from '@/types'
+import ManagePagesClient from './ManagePagesClient'
+
+export default async function ManagePagesPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+
+  const cookieStore = await cookies()
+  const token = cookieStore.get('session_token')?.value
+  if (!token) redirect('/admin/login')
+
+  let project: Project | undefined
+  let allProjects: Project[] = mockProjects
+  let pages: Page[] = []
+  let user: User = mockUser
+
+  try {
+    const session = await prisma.session.findUnique({
+      where: { sessionToken: token },
+      include: {
+        user: { include: { projects: { orderBy: { createdAt: 'desc' } } } },
+      },
+    })
+
+    if (!session || session.expires < new Date()) redirect('/admin/login')
+
+    user = {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email,
+      phone: session.user.phone ?? '',
+      createdAt: session.user.createdAt.toISOString(),
+    }
+
+    allProjects = session.user.projects.map((p) => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      description: p.description ?? '',
+      frontendUrl: p.frontendUrl ?? '',
+      backendUrl: p.backendUrl ?? '',
+      isActive: p.isActive,
+      welcomeScreenEnabled: p.welcomeScreenEnabled,
+      createdBy: p.createdBy,
+      createdAt: p.createdAt.toISOString(),
+    }))
+
+    const dbProject = session.user.projects.find((p) => p.slug === slug)
+    if (dbProject) {
+      project = allProjects.find((p) => p.slug === slug)
+
+      const dbPages = await prisma.page.findMany({
+        where: { projectId: dbProject.id },
+        orderBy: [{ sequence: 'asc' }, { title: 'asc' }],
+      })
+
+      pages = dbPages.map((p) => ({
+        id: p.id,
+        projectId: p.projectId,
+        title: p.title,
+        slug: p.slug,
+        sequence: p.sequence,
+        icon: p.icon ?? '',
+        parentId: p.parentId,
+        description: p.description ?? '',
+        content: p.content ?? '',
+        isActive: p.isActive,
+        createdAt: p.createdAt.toISOString(),
+        updatedAt: p.updatedAt.toISOString(),
+      }))
+    }
+  } catch {
+    // DB unavailable — fall back to mock
+  }
+
+  if (!project) {
+    project = mockProjects.find((p) => p.slug === slug)
+    if (!project) notFound()
+    pages = mockPages
+      .filter((p) => p.projectId === project!.id)
+      .sort((a, b) => a.sequence - b.sequence)
+  }
+
+  return (
+    <ManagePagesClient
+      project={project}
+      allProjects={allProjects}
+      user={user}
+      pages={pages}
+    />
+  )
+}

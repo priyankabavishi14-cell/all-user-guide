@@ -1,13 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-
-export const SVG_ICONS = ['location', 'sales', 'user'] as const
-export type SvgIconName = (typeof SVG_ICONS)[number]
-
-export function isSvgIcon(value: string): value is SvgIconName {
-  return (SVG_ICONS as readonly string[]).includes(value)
-}
+export { SVG_ICONS, isSvgIcon } from '@/lib/icon-utils'
+export type { SvgIconName } from '@/lib/icon-utils'
+import { SVG_ICONS, isSvgIcon } from '@/lib/icon-utils'
 
 interface Props {
   value: string
@@ -16,7 +12,12 @@ interface Props {
 
 export default function IconPicker({ value, onChange }: Props) {
   const [open, setOpen] = useState(false)
+  const [imgError, setImgError] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setImgError(false)
+  }, [value])
 
   useEffect(() => {
     function onMouseDown(e: MouseEvent) {
@@ -42,8 +43,8 @@ export default function IconPicker({ value, onChange }: Props) {
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center gap-2 border border-[#e5e7eb] rounded-lg px-3 py-2 text-sm bg-white hover:bg-[#f9fafb] focus:outline-none focus:ring-2 focus:ring-[#5b5ce2] transition"
       >
-        {value && isSvgIcon(value) ? (
-          <img src={`/icons/${value}.svg`} alt={value} className="w-5 h-5 shrink-0" />
+        {value && isSvgIcon(value) && !imgError ? (
+          <img src={`/icons/${value}.svg`} alt={value} className="w-5 h-5 shrink-0" onError={() => setImgError(true)} />
         ) : value ? (
           <span className="text-base leading-none">{value}</span>
         ) : (

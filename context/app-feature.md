@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress
+In Progress — Small Changes Phase 1 spec added (sticky header, fixed sidebars, View button highlight)
 
 ## Goals
 
@@ -122,6 +122,47 @@ In Progress
 - Behavior rules: prevent deletion of parent without handling children; unique page slug enforced; sequence order integrity preserved
 - Responsive: sidebar collapses on smaller screens; table scrollable horizontally; actions accessible via dropdown on mobile
 
+### Small Changes — Phase 1 (UI/UX Improvements)
+
+#### Admin Panel
+
+1. **Static Header (Sticky Header)**
+   - Top header section remains fixed while scrolling
+   - Applies to: page title section, markdown editor toolbar/options
+   - Expected: header always visible; Save button and formatting tools (H1–H5, Bold, Lists, Insert Link, Upload Image) accessible without scrolling up
+
+2. **Static Left Sidebar Menu**
+   - Left navigation menu remains fixed while main content scrolls
+   - Applies to: Dashboard, Manage Pages, Create/Edit Page, User & Permission Management, all admin pages
+   - Expected: sidebar always visible; navigation accessible during long page scrolling
+
+3. **Existing Projects — Highlight Change**
+   - Current: "Edit" button is highlighted (primary emphasis)
+   - Updated: "View" button highlighted instead; "Edit" de-emphasised
+   - Applies to: Manage All Projects → Existing Projects listing
+
+#### View Live Site
+
+4. **Static Left Sidebar Menu**
+   - Documentation navigation sidebar remains fixed while content scrolls
+   - Applies to: documentation live view, welcome screen, content pages
+   - Expected: sidebar always accessible; users can switch pages without scrolling back up
+
+#### Layout Behaviour Summary
+
+| Section (Admin) | Behaviour |
+|---|---|
+| Header | Fixed / Sticky |
+| Left Sidebar | Fixed |
+| Main Content | Scrollable |
+
+| Section (Live Site) | Behaviour |
+|---|---|
+| Left Sidebar | Fixed |
+| Content Area | Scrollable |
+
+---
+
 ### Manage Pages — Small Changes
 - Hierarchy View is active by default every time Manage Pages loads; does not persist last selected view
 - Create New Page: after clicking Save Changes, redirect to Manage Pages (not Project Dashboard)
@@ -220,6 +261,13 @@ In Progress
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-12 — Added Small Changes Phase 1 Spec
+- Defined Small Changes Phase 1 UI/UX improvements (`context/features/small-changes-01-spec.md`)
+- Admin Panel: sticky top header (page title + markdown toolbar always visible on scroll)
+- Admin Panel: fixed left sidebar on all admin screens (Dashboard, Manage Pages, Create/Edit Page, User Management)
+- Admin Panel: Existing Projects listing — "View" button now primary highlighted action instead of "Edit"
+- Live Site: fixed left documentation sidebar; only main content area scrolls
 
 ### 2026-05-05 — Added Icon Picker to Small Changes Spec
 - Added Icon Picker requirement to `context/features/small-changes.md`
