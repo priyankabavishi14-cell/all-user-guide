@@ -42,3 +42,7 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+
+# uploaded files (runtime artefacts, not source)
+/uploads/
+/public/uploads/

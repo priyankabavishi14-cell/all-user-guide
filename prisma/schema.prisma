@@ -32,11 +32,13 @@ model Project {
   description String?
   frontendUrl String?  @map("frontend_url")
   backendUrl  String?  @map("backend_url")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdBy   String   @map("created_by")
-  createdAt   DateTime @default(now()) @map("created_at")
-  user        User     @relation(fields: [createdBy], references: [id])
-  pages       Page[]
+  isActive             Boolean  @default(true) @map("is_active")
+  welcomeScreenEnabled Boolean  @default(true) @map("welcome_screen_enabled")
+  createdBy            String   @map("created_by")
+  createdAt            DateTime @default(now()) @map("created_at")
+  user         User          @relation(fields: [createdBy], references: [id])
+  pages        Page[]
+  projectUsers ProjectUser[]
 
   @@index([createdBy])
   @@map("projects")
@@ -55,9 +57,10 @@ model Page {
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  parent      Page?    @relation("PageChildren", fields: [parentId], references: [id])
-  children    Page[]   @relation("PageChildren")
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parent          Page?            @relation("PageChildren", fields: [parentId], references: [id])
+  children        Page[]           @relation("PageChildren")
+  pagePermissions PagePermission[]
 
   @@unique([projectId, slug])
   @@index([projectId])
@@ -97,6 +100,51 @@ model Session {
 
   @@index([userId])
   @@map("sessions")
+}
+
+// ─── User Permission Models ───────────────────────────────────────────────────
+
+model ProjectUser {
+  id           String   @id @default(uuid())
+  projectId    String   @map("project_id")
+  name         String
+  email        String
+  password     String
+  role         String   @default("viewer")
+  accessType   String   @default("full") @map("access_type")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  pagePermissions PagePermission[]
+  viewerSessions  ViewerSession[]
+
+  @@unique([projectId, email])
+  @@index([projectId])
+  @@map("project_users")
+}
+
+model PagePermission {
+  id            String      @id @default(uuid())
+  projectUserId String      @map("project_user_id")
+  pageId        String      @map("page_id")
+
+  projectUser   ProjectUser @relation(fields: [projectUserId], references: [id], onDelete: Cascade)
+  page          Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([projectUserId, pageId])
+  @@map("page_permissions")
+}
+
+model ViewerSession {
+  id            String      @id @default(uuid())
+  sessionToken  String      @unique @map("session_token")
+  projectUserId String      @map("project_user_id")
+  expires       DateTime
+
+  projectUser   ProjectUser @relation(fields: [projectUserId], references: [id], onDelete: Cascade)
+
+  @@index([projectUserId])
+  @@map("viewer_sessions")
 }
 
 model VerificationToken {
