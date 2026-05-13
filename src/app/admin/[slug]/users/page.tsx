@@ -28,11 +28,7 @@ export default async function ManageUsersPage({
     const auth = await resolveAuth(token)
     if (!auth) redirect('/admin/login')
 
-    // Normal Users (viewer role) cannot access Manage Users
-    if (auth.kind === 'viewer') {
-      if (auth.role === 'viewer') redirect(`/admin/${slug}`)
-      viewerRole = auth.role
-    }
+    if (auth.kind === 'viewer') viewerRole = auth.role
 
     user = auth.user
     allProjects = auth.allProjects
@@ -41,13 +37,19 @@ export default async function ManageUsersPage({
     if (dbProject) {
       project = dbProject
 
+      // Normal Users (viewer role) see only other Normal Users in the listing
+      const usersWhere =
+        auth.kind === 'viewer' && auth.role === 'viewer'
+          ? { projectId: dbProject.id, role: 'viewer' }
+          : { projectId: dbProject.id }
+
       const [dbPages, dbUsers] = await Promise.all([
         prisma.page.findMany({
           where: { projectId: dbProject.id },
           orderBy: [{ sequence: 'asc' }, { title: 'asc' }],
         }),
         prisma.projectUser.findMany({
-          where: { projectId: dbProject.id },
+          where: usersWhere,
           include: { pagePermissions: true },
           orderBy: { createdAt: 'desc' },
         }),

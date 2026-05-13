@@ -25,6 +25,7 @@ export default async function AdminDashboardPage({
   let projectPages: Page[] = []
   let user: User = mockUser
   let viewerRole: 'admin' | 'viewer' | undefined
+  let allowedPageIds: string[] | undefined
 
   try {
     const auth = await resolveAuth(token)
@@ -32,14 +33,21 @@ export default async function AdminDashboardPage({
 
     user = auth.user
     allProjects = auth.allProjects
-    if (auth.kind === 'viewer') viewerRole = auth.role
+    if (auth.kind === 'viewer') {
+      viewerRole = auth.role
+      if (auth.accessType === 'restricted') allowedPageIds = auth.allowedPageIds
+    }
 
     const dbProject = auth.allProjects.find((p) => p.slug === slug)
     if (dbProject) {
       project = dbProject
 
+      const whereClause = allowedPageIds
+        ? { projectId: dbProject.id, id: { in: allowedPageIds } }
+        : { projectId: dbProject.id }
+
       const dbPages = await prisma.page.findMany({
-        where: { projectId: dbProject.id },
+        where: whereClause,
         orderBy: { updatedAt: 'desc' },
         take: 10,
       })

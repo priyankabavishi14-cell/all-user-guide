@@ -51,19 +51,17 @@ export default function AdminSidebar({ project, allProjects, activePage, viewerR
           <span>📄</span>
           Manage Pages
         </Link>
-        {viewerRole !== 'viewer' && (
-          <Link
-            href={`/admin/${project.slug}/users`}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-              activePage === 'users'
-                ? 'bg-[#ede9fe] text-[#5b5ce2] font-medium'
-                : 'text-[#374151] hover:bg-[#f9fafb]'
-            }`}
-          >
-            <span>👥</span>
-            Manage Users
-          </Link>
-        )}
+        <Link
+          href={`/admin/${project.slug}/users`}
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+            activePage === 'users'
+              ? 'bg-[#ede9fe] text-[#5b5ce2] font-medium'
+              : 'text-[#374151] hover:bg-[#f9fafb]'
+          }`}
+        >
+          <span>👥</span>
+          Manage Users
+        </Link>
       </nav>
 
       <div className="p-4 border-t border-[#e5e7eb]">
