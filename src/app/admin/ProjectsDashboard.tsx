@@ -186,9 +186,10 @@ export default function ProjectsDashboard({
             </div>
           </div>
 
-          <form action={logoutAction}>
+          <form action={logoutAction} suppressHydrationWarning>
             <button
               type="submit"
+              suppressHydrationWarning
               className="text-sm text-[#6b7280] border border-[#e5e7eb] px-3 py-1.5 rounded-lg hover:text-[#ef4444] hover:border-red-200 transition-colors"
             >
               Logout

@@ -233,6 +233,20 @@ export default function UsersClient({
 
   function handleSubmit() {
     setFormError('')
+    const errs: Record<string, string> = {}
+    if (!formName.trim()) errs.name = 'Name is required'
+    if (!formEmail.trim()) {
+      errs.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail.trim())) {
+      errs.email = 'Please enter a valid email address'
+    }
+    if (modalMode === 'add' && (!formPassword || formPassword.length < 6)) {
+      errs.password = 'Password must be at least 6 characters'
+    }
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs)
+      return
+    }
     setFieldErrors({})
 
     const fd = new FormData()
