@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-Completed — Manage Users implemented (Super Admin/Admin User/Normal User roles, user listing with search, add/edit/delete modals, project-scoped access, page-level permissions)
+In Progress — Manage Users changes spec added (menu highlight fix, restricted access creation fix, remove Confirm Password, add password show/hide, project-specific user login fix)
 
 ## Goals
 
@@ -303,6 +303,32 @@ Completed — Manage Users implemented (Super Admin/Admin User/Normal User roles
 - If an assigned page is deleted, remove it from user permissions automatically
 - Security enforced at both frontend (UI visibility) and backend (API validation)
 
+### Manage Users — Changes (Phase 1)
+
+#### 1. Manage Users Menu Highlight Fix
+- When clicking "Manage Users" page, only "Manage Users" option should highlight
+- "Dashboard" option must not also highlight
+- Other menu items behavior unchanged
+
+#### 2. Restricted Access User Creation Fix
+- Restricted access user creation currently shows a failed message but actually succeeds (visible after refresh)
+- Same issue affects update user functionality
+- Fix: restricted access user should create/update successfully without requiring a page refresh
+- Proper success message should display immediately
+- No duplicate user creation
+
+#### 3. Add New User Popup Changes
+- Remove "Confirm Password" field
+- Role dropdown options: Admin User, Normal User (no other roles)
+- Add show/hide password eye icon to Password field; user can toggle password visibility
+- All other existing fields remain unchanged
+
+#### 4. Created User Login Fix
+- Created Admin User / Normal User accounts currently cannot log in (shows "Invalid email or password")
+- Fix: project-specific users should log in using their created email and password
+- User sees only the assigned project on login
+- Access permissions apply based on assigned role and access type
+
 ### Markdown Editor Headings Toolbar
 - Horizontal toolbar at the top of the markdown editor with H1 | H2 | H3 | H4 | H5 buttons
 - Clicking a heading button applies the correct markdown prefix (`#` through `#####`) at the start of the current line
@@ -332,6 +358,13 @@ Completed — Manage Users implemented (Super Admin/Admin User/Normal User roles
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-13 — Added Manage Users Changes Spec
+- Defined Manage Users Changes Phase 1 spec (`context/features/manage-users-changes-spec.md`)
+- Fix 1: Menu highlight — only "Manage Users" highlights when on Manage Users page; Dashboard highlight removed
+- Fix 2: Restricted access user creation/update shows failure message but succeeds; fix to show proper success without refresh and prevent duplicates
+- Fix 3: Add New User popup — remove Confirm Password field; add show/hide password eye icon; role options Admin User/Normal User only
+- Fix 4: Project-specific Admin User/Normal User login fails with "Invalid email or password"; fix authentication to use created credentials; user sees only assigned project on login
 
 ### 2026-05-13 — Implemented Manage Users
 - Created `src/app/admin/[slug]/users/UsersClient.tsx` (Client Component: full rewrite — search bar filtering by name/email, table with Name/Email/Role/Access Type/Assigned Project/Actions columns, View/Edit/Delete actions per row)

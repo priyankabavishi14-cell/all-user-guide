@@ -7,13 +7,39 @@ import { prisma } from '@/lib/prisma'
 
 type ActionResult = { success?: boolean; error?: string }
 
-async function verifyAdminSession(token: string) {
+type AdminSessionResult =
+  | { kind: 'admin'; projects: Array<{ id: string; slug: string }> }
+  | { kind: 'viewer'; projectId: string; projectSlug: string }
+  | null
+
+async function verifyAdminSession(token: string): Promise<AdminSessionResult> {
+  // Try regular admin session
   const session = await prisma.session.findUnique({
     where: { sessionToken: token },
     include: { user: { include: { projects: true } } },
   })
-  if (!session || session.expires < new Date()) return null
-  return session
+  if (session && session.expires >= new Date()) {
+    return { kind: 'admin', projects: session.user.projects }
+  }
+
+  // Try viewer session for ProjectUser with admin role
+  const viewerSession = await prisma.viewerSession.findUnique({
+    where: { sessionToken: token },
+    include: { projectUser: { include: { project: true } } },
+  })
+  if (
+    viewerSession &&
+    viewerSession.expires >= new Date() &&
+    viewerSession.projectUser.role === 'admin'
+  ) {
+    return {
+      kind: 'viewer',
+      projectId: viewerSession.projectUser.projectId,
+      projectSlug: viewerSession.projectUser.project.slug,
+    }
+  }
+
+  return null
 }
 
 function hashPassword(password: string): Promise<string> {
@@ -34,11 +60,17 @@ export async function createProjectUserAction(
   const token = cookieStore.get('session_token')?.value
   if (!token) return { error: 'Unauthorized' }
 
-  const adminSession = await verifyAdminSession(token)
-  if (!adminSession) return { error: 'Unauthorized' }
+  const auth = await verifyAdminSession(token)
+  if (!auth) return { error: 'Unauthorized' }
 
-  const dbProject = adminSession.user.projects.find((p) => p.slug === projectSlug)
-  if (!dbProject) return { error: 'Project not found' }
+  let dbProjectId: string | undefined
+  if (auth.kind === 'admin') {
+    dbProjectId = auth.projects.find((p) => p.slug === projectSlug)?.id
+  } else {
+    if (auth.projectSlug !== projectSlug) return { error: 'Project not found' }
+    dbProjectId = auth.projectId
+  }
+  if (!dbProjectId) return { error: 'Project not found' }
 
   const name       = formData.get('name')?.toString().trim() ?? ''
   const email      = formData.get('email')?.toString().trim().toLowerCase() ?? ''
@@ -53,15 +85,17 @@ export async function createProjectUserAction(
 
   try {
     const hashedPassword = await hashPassword(password)
-    const projectUser = await prisma.projectUser.create({
-      data: { projectId: dbProject.id, name, email, password: hashedPassword, role, accessType },
-    })
 
-    if (accessType === 'restricted' && pageIds.length > 0) {
-      await prisma.pagePermission.createMany({
-        data: pageIds.map((pageId) => ({ projectUserId: projectUser.id, pageId })),
+    await prisma.$transaction(async (tx) => {
+      const projectUser = await tx.projectUser.create({
+        data: { projectId: dbProjectId!, name, email, password: hashedPassword, role, accessType },
       })
-    }
+      if (accessType === 'restricted' && pageIds.length > 0) {
+        await tx.pagePermission.createMany({
+          data: pageIds.map((pageId) => ({ projectUserId: projectUser.id, pageId })),
+        })
+      }
+    })
 
     revalidatePath(`/admin/${projectSlug}/users`)
     return { success: true }
@@ -80,8 +114,8 @@ export async function updateProjectUserAction(
   const token = cookieStore.get('session_token')?.value
   if (!token) return { error: 'Unauthorized' }
 
-  const adminSession = await verifyAdminSession(token)
-  if (!adminSession) return { error: 'Unauthorized' }
+  const auth = await verifyAdminSession(token)
+  if (!auth) return { error: 'Unauthorized' }
 
   const name       = formData.get('name')?.toString().trim() ?? ''
   const email      = formData.get('email')?.toString().trim().toLowerCase() ?? ''
@@ -99,14 +133,15 @@ export async function updateProjectUserAction(
     const updateData: UpdateData = { name, email, role, accessType }
     if (password) updateData.password = await hashPassword(password)
 
-    await prisma.projectUser.update({ where: { id: userId }, data: updateData })
-    await prisma.pagePermission.deleteMany({ where: { projectUserId: userId } })
-
-    if (accessType === 'restricted' && pageIds.length > 0) {
-      await prisma.pagePermission.createMany({
-        data: pageIds.map((pageId) => ({ projectUserId: userId, pageId })),
-      })
-    }
+    await prisma.$transaction(async (tx) => {
+      await tx.projectUser.update({ where: { id: userId }, data: updateData })
+      await tx.pagePermission.deleteMany({ where: { projectUserId: userId } })
+      if (accessType === 'restricted' && pageIds.length > 0) {
+        await tx.pagePermission.createMany({
+          data: pageIds.map((pageId) => ({ projectUserId: userId, pageId })),
+        })
+      }
+    })
 
     revalidatePath(`/admin/${projectSlug}/users`)
     return { success: true }
@@ -124,8 +159,8 @@ export async function deleteProjectUserAction(
   const token = cookieStore.get('session_token')?.value
   if (!token) return { error: 'Unauthorized' }
 
-  const adminSession = await verifyAdminSession(token)
-  if (!adminSession) return { error: 'Unauthorized' }
+  const auth = await verifyAdminSession(token)
+  if (!auth) return { error: 'Unauthorized' }
 
   try {
     await prisma.projectUser.delete({ where: { id: userId } })

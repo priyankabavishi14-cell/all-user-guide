@@ -54,32 +54,50 @@ export async function loginAction(
 
   if (Object.keys(errors).length > 0) return { errors }
 
-  const user = await prisma.user.findUnique({ where: { email } })
-
-  if (!user || !user.password) {
-    return { message: 'Invalid email or password' }
-  }
-
-  const valid = await verifyPassword(user.password, password)
-  if (!valid) {
-    return { message: 'Invalid email or password' }
-  }
-
-  const token = crypto.randomBytes(32).toString('hex')
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-  await prisma.session.create({
-    data: { sessionToken: token, userId: user.id, expires },
-  })
-
   const cookieStore = await cookies()
-  cookieStore.set('session_token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    expires,
-    path: '/',
+
+  // Check main admin user first
+  const user = await prisma.user.findUnique({ where: { email } })
+  if (user && user.password) {
+    const valid = await verifyPassword(user.password, password)
+    if (!valid) return { message: 'Invalid email or password' }
+
+    const token = crypto.randomBytes(32).toString('hex')
+    await prisma.session.create({ data: { sessionToken: token, userId: user.id, expires } })
+    cookieStore.set('session_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires,
+      path: '/',
+    })
+    redirect('/admin')
+  }
+
+  // Check project-specific user (ProjectUser)
+  const projectUser = await prisma.projectUser.findFirst({
+    where: { email },
+    include: { project: true },
   })
 
-  redirect('/admin')
+  if (projectUser) {
+    const valid = await verifyPassword(projectUser.password, password)
+    if (!valid) return { message: 'Invalid email or password' }
+
+    const token = crypto.randomBytes(32).toString('hex')
+    await prisma.viewerSession.create({
+      data: { sessionToken: token, projectUserId: projectUser.id, expires },
+    })
+    cookieStore.set('session_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires,
+      path: '/',
+    })
+    redirect(`/admin/${projectUser.project.slug}`)
+  }
+
+  return { message: 'Invalid email or password' }
 }
