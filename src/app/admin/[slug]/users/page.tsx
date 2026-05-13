@@ -22,10 +22,17 @@ export default async function ManageUsersPage({
   let pages: Page[] = []
   let user: User = mockUser
   let projectUsers: ProjectUser[] = []
+  let viewerRole: 'admin' | 'viewer' | undefined
 
   try {
     const auth = await resolveAuth(token)
     if (!auth) redirect('/admin/login')
+
+    // Normal Users (viewer role) cannot access Manage Users
+    if (auth.kind === 'viewer') {
+      if (auth.role === 'viewer') redirect(`/admin/${slug}`)
+      viewerRole = auth.role
+    }
 
     user = auth.user
     allProjects = auth.allProjects
@@ -89,6 +96,7 @@ export default async function ManageUsersPage({
       user={user}
       pages={pages}
       projectUsers={projectUsers}
+      viewerRole={viewerRole}
     />
   )
 }

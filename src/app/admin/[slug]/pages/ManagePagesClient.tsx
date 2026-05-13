@@ -14,6 +14,7 @@ interface Props {
   allProjects: Project[]
   user: User
   pages: Page[]
+  viewerRole?: 'admin' | 'viewer'
 }
 
 type PageNode = Page & { children: PageNode[] }
@@ -49,7 +50,7 @@ function formatUpdated(iso: string): string {
   })
 }
 
-export default function ManagePagesClient({ project, allProjects, user, pages }: Props) {
+export default function ManagePagesClient({ project, allProjects, user, pages, viewerRole }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [search, setSearch] = useState('')
@@ -217,7 +218,7 @@ export default function ManagePagesClient({ project, allProjects, user, pages }:
     <div className="h-screen bg-[#f9fafb] flex flex-col">
       <AdminHeader project={project} user={user} />
       <div className="flex flex-1 overflow-hidden">
-        <AdminSidebar project={project} allProjects={allProjects} activePage="manage-pages" />
+        <AdminSidebar project={project} allProjects={allProjects} activePage="manage-pages" viewerRole={viewerRole} />
         <main className="flex-1 p-6 overflow-auto">
           {/* Page Header */}
           <div className="flex items-start justify-between mb-6">

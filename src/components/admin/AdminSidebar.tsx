@@ -6,9 +6,10 @@ interface Props {
   project: Project
   allProjects: Project[]
   activePage?: 'dashboard' | 'manage-pages' | 'users'
+  viewerRole?: 'admin' | 'viewer'
 }
 
-export default function AdminSidebar({ project, allProjects, activePage }: Props) {
+export default function AdminSidebar({ project, allProjects, activePage, viewerRole }: Props) {
   return (
     <aside className="w-60 shrink-0 bg-white border-r border-[#e5e7eb] flex flex-col sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
       <div className="p-4 border-b border-[#e5e7eb]">
@@ -50,17 +51,19 @@ export default function AdminSidebar({ project, allProjects, activePage }: Props
           <span>📄</span>
           Manage Pages
         </Link>
-        <Link
-          href={`/admin/${project.slug}/users`}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-            activePage === 'users'
-              ? 'bg-[#ede9fe] text-[#5b5ce2] font-medium'
-              : 'text-[#374151] hover:bg-[#f9fafb]'
-          }`}
-        >
-          <span>👥</span>
-          Manage Users
-        </Link>
+        {viewerRole !== 'viewer' && (
+          <Link
+            href={`/admin/${project.slug}/users`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+              activePage === 'users'
+                ? 'bg-[#ede9fe] text-[#5b5ce2] font-medium'
+                : 'text-[#374151] hover:bg-[#f9fafb]'
+            }`}
+          >
+            <span>👥</span>
+            Manage Users
+          </Link>
+        )}
       </nav>
 
       <div className="p-4 border-t border-[#e5e7eb]">

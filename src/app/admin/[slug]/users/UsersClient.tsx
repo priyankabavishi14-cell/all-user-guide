@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition, useRef, useMemo } from 'react'
+import React, { useState, useTransition, useRef, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminHeader from '@/components/admin/AdminHeader'
 import AdminSidebar from '@/components/admin/AdminSidebar'
@@ -17,6 +17,7 @@ interface Props {
   user: User
   pages: Page[]
   projectUsers: ProjectUser[]
+  viewerRole?: 'admin' | 'viewer'
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -130,12 +131,18 @@ export default function UsersClient({
   user,
   pages,
   projectUsers: initialUsers,
+  viewerRole,
 }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [users, setUsers] = useState<ProjectUser[]>(initialUsers)
+
+  // Sync local list when server re-renders after router.refresh()
+  useEffect(() => {
+    setUsers(initialUsers)
+  }, [initialUsers])
   const [search, setSearch] = useState('')
 
   // Modal
@@ -563,7 +570,7 @@ export default function UsersClient({
       <AdminHeader project={project} user={user} />
 
       <div className="flex flex-1 overflow-hidden">
-        <AdminSidebar project={project} allProjects={allProjects} activePage="users" />
+        <AdminSidebar project={project} allProjects={allProjects} activePage="users" viewerRole={viewerRole} />
 
         <main className="flex-1 p-6 overflow-auto">
           {/* Page header */}

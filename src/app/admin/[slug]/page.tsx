@@ -24,6 +24,7 @@ export default async function AdminDashboardPage({
   let allProjects: Project[] = mockProjects
   let projectPages: Page[] = []
   let user: User = mockUser
+  let viewerRole: 'admin' | 'viewer' | undefined
 
   try {
     const auth = await resolveAuth(token)
@@ -31,6 +32,7 @@ export default async function AdminDashboardPage({
 
     user = auth.user
     allProjects = auth.allProjects
+    if (auth.kind === 'viewer') viewerRole = auth.role
 
     const dbProject = auth.allProjects.find((p) => p.slug === slug)
     if (dbProject) {
@@ -81,7 +83,7 @@ export default async function AdminDashboardPage({
     <div className="h-screen bg-[#f9fafb] flex flex-col">
       <AdminHeader project={project} user={user} />
       <div className="flex flex-1 overflow-hidden">
-        <AdminSidebar project={project} allProjects={allProjects} />
+        <AdminSidebar project={project} allProjects={allProjects} viewerRole={viewerRole} />
         <main className="flex-1 p-6 overflow-auto">
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#6b7280]">
