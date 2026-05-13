@@ -9,8 +9,6 @@ export type ProjectFormState = {
   errors?: {
     title?: string[]
     slug?: string[]
-    frontendUrl?: string[]
-    backendUrl?: string[]
   }
   message?: string
   success?: boolean
@@ -31,8 +29,6 @@ function parseProjectFields(formData: FormData) {
   const title = formData.get('title')?.toString().trim() ?? ''
   const slug = formData.get('slug')?.toString().trim().toLowerCase() ?? ''
   const description = formData.get('description')?.toString().trim() ?? ''
-  const frontendUrl = formData.get('frontendUrl')?.toString().trim() ?? ''
-  const backendUrl = formData.get('backendUrl')?.toString().trim() ?? ''
 
   const errors: ProjectFormState['errors'] = {}
   if (!title) errors.title = ['Project title is required']
@@ -41,24 +37,21 @@ function parseProjectFields(formData: FormData) {
   } else if (!/^[a-z0-9-]+$/.test(slug)) {
     errors.slug = ['Slug may only contain lowercase letters, numbers, and hyphens']
   }
-  if (!frontendUrl) errors.frontendUrl = ['Frontend URL is required']
-  if (!backendUrl) errors.backendUrl = ['Backend URL is required']
 
-  return { title, slug, description, frontendUrl, backendUrl, errors }
+  return { title, slug, description, errors }
 }
 
 export async function createProjectAction(
   formData: FormData
 ): Promise<ProjectFormState> {
-  const { title, slug, description, frontendUrl, backendUrl, errors } =
-    parseProjectFields(formData)
+  const { title, slug, description, errors } = parseProjectFields(formData)
   if (Object.keys(errors).length > 0) return { errors }
 
   const createdBy = await resolveUserId()
 
   try {
     await prisma.project.create({
-      data: { title, slug, description, frontendUrl, backendUrl, createdBy },
+      data: { title, slug, description, createdBy },
     })
   } catch (err: unknown) {
     const isUnique = err instanceof Error && err.message.includes('Unique constraint')
@@ -74,14 +67,13 @@ export async function updateProjectAction(
   projectId: string,
   formData: FormData
 ): Promise<ProjectFormState> {
-  const { title, slug, description, frontendUrl, backendUrl, errors } =
-    parseProjectFields(formData)
+  const { title, slug, description, errors } = parseProjectFields(formData)
   if (Object.keys(errors).length > 0) return { errors }
 
   try {
     await prisma.project.update({
       where: { id: projectId },
-      data: { title, slug, description, frontendUrl, backendUrl },
+      data: { title, slug, description },
     })
   } catch (err: unknown) {
     const isUnique = err instanceof Error && err.message.includes('Unique constraint')

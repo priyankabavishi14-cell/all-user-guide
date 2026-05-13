@@ -36,6 +36,7 @@ export default async function ManagePagesPage({
       name: session.user.name,
       email: session.user.email,
       phone: session.user.phone ?? '',
+      isSuperAdmin: session.user.isSuperAdmin,
       createdAt: session.user.createdAt.toISOString(),
     }
 

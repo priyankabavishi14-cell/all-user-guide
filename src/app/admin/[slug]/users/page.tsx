@@ -37,6 +37,7 @@ export default async function ManageUsersPage({
       name: session.user.name,
       email: session.user.email,
       phone: session.user.phone ?? '',
+      isSuperAdmin: session.user.isSuperAdmin,
       createdAt: session.user.createdAt.toISOString(),
     }
 
@@ -89,7 +90,7 @@ export default async function ManageUsersPage({
         projectId: u.projectId,
         name: u.name,
         email: u.email,
-        role: u.role as 'editor' | 'viewer',
+        role: u.role as 'admin' | 'viewer',
         accessType: u.accessType as 'full' | 'restricted',
         createdAt: u.createdAt.toISOString(),
         allowedPageIds: u.pagePermissions.map((pp) => pp.pageId),

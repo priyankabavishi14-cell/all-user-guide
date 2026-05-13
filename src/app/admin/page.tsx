@@ -31,10 +31,15 @@ export default async function AllProjectsPage() {
       name: session.user.name,
       email: session.user.email,
       phone: session.user.phone ?? '',
+      isSuperAdmin: session.user.isSuperAdmin,
       createdAt: session.user.createdAt.toISOString(),
     }
 
-    projectsList = session.user.projects.map((p) => ({
+    const rawProjects = user.isSuperAdmin
+      ? await prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+      : session.user.projects
+
+    projectsList = rawProjects.map((p) => ({
       id: p.id,
       title: p.title,
       slug: p.slug,
