@@ -85,23 +85,23 @@ export async function createProjectUserAction(
 
   try {
     const hashedPassword = await hashPassword(password)
-    const newUserId = crypto.randomUUID()
 
-    // Neon HTTP adapter requires array-form transactions (no interactive/callback form)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ops: any[] = [
-      prisma.projectUser.create({
-        data: { id: newUserId, projectId: dbProjectId!, name, email, password: hashedPassword, role, accessType },
-      }),
-    ]
+    const projectUser = await prisma.projectUser.create({
+      data: { projectId: dbProjectId!, name, email, password: hashedPassword, role, accessType },
+    })
+
     if (accessType === 'restricted' && pageIds.length > 0) {
-      ops.push(
-        prisma.pagePermission.createMany({
-          data: pageIds.map((pageId) => ({ projectUserId: newUserId, pageId })),
-        })
-      )
+      try {
+        await Promise.all(
+          pageIds.map((pageId) =>
+            prisma.pagePermission.create({ data: { projectUserId: projectUser.id, pageId } })
+          )
+        )
+      } catch {
+        await prisma.projectUser.delete({ where: { id: projectUser.id } }).catch(() => {})
+        return { error: 'Failed to set page permissions' }
+      }
     }
-    await prisma.$transaction(ops)
 
     revalidatePath(`/admin/${projectSlug}/users`)
     return { success: true }
@@ -139,20 +139,16 @@ export async function updateProjectUserAction(
     const updateData: UpdateData = { name, email, role, accessType }
     if (password) updateData.password = await hashPassword(password)
 
-    // Neon HTTP adapter requires array-form transactions (no interactive/callback form)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ops: any[] = [
-      prisma.projectUser.update({ where: { id: userId }, data: updateData }),
-      prisma.pagePermission.deleteMany({ where: { projectUserId: userId } }),
-    ]
+    await prisma.projectUser.update({ where: { id: userId }, data: updateData })
+    await prisma.pagePermission.deleteMany({ where: { projectUserId: userId } })
+
     if (accessType === 'restricted' && pageIds.length > 0) {
-      ops.push(
-        prisma.pagePermission.createMany({
-          data: pageIds.map((pageId) => ({ projectUserId: userId, pageId })),
-        })
+      await Promise.all(
+        pageIds.map((pageId) =>
+          prisma.pagePermission.create({ data: { projectUserId: userId, pageId } })
+        )
       )
     }
-    await prisma.$transaction(ops)
 
     revalidatePath(`/admin/${projectSlug}/users`)
     return { success: true }
