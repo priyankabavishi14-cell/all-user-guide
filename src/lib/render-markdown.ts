@@ -50,9 +50,32 @@ export function renderMarkdown(raw: string): string {
   let inCodeBlock = false
   const codeLines: string[] = []
 
+  type ListFrame = { tag: 'ul' | 'ol'; indent: number }
+  const listStack: ListFrame[] = []
+
+  function closeAllLists() {
+    while (listStack.length) output.push(`</${listStack.pop()!.tag}>`)
+  }
+
+  function closeAbove(targetIndent: number) {
+    while (listStack.length && listStack[listStack.length - 1].indent > targetIndent) {
+      output.push(`</${listStack.pop()!.tag}>`)
+    }
+  }
+
+  function openList(tag: 'ul' | 'ol', indent: number) {
+    const isTop = listStack.length === 0
+    const cls = tag === 'ul'
+      ? isTop ? 'list-disc ml-5 my-2 space-y-0.5 text-[#374151]' : 'list-disc ml-5 mt-1 space-y-0.5'
+      : isTop ? 'list-decimal ml-5 my-2 space-y-0.5 text-[#374151]' : 'list-decimal ml-5 mt-1 space-y-0.5'
+    output.push(`<${tag} class="${cls}">`)
+    listStack.push({ tag, indent })
+  }
+
   for (const line of lines) {
     if (line.startsWith('```')) {
       if (!inCodeBlock) {
+        closeAllLists()
         inCodeBlock = true
         codeLines.length = 0
       } else {
@@ -69,6 +92,46 @@ export function renderMarkdown(raw: string): string {
       continue
     }
 
+    // Detect list items (with any leading indentation)
+    const checkedM  = line.match(/^( *)- \[x\] (.+)$/)
+    const uncheckM  = line.match(/^( *)- \[ \] (.+)$/)
+    const bulletM   = line.match(/^( *)[*-] (?!\[)(.+)$/)
+    const numberedM = line.match(/^( *)\d+\. (.+)$/)
+
+    if (checkedM || uncheckM || bulletM || numberedM) {
+      const m = (checkedM || uncheckM || bulletM || numberedM)!
+      const indent = m[1].length
+      const isNumbered = !!numberedM && !checkedM && !uncheckM
+      const tag: 'ul' | 'ol' = isNumbered ? 'ol' : 'ul'
+
+      if (listStack.length === 0) {
+        openList(tag, indent)
+      } else {
+        const topIndent = listStack[listStack.length - 1].indent
+        if (indent > topIndent) {
+          openList(tag, indent)
+        } else if (indent < topIndent) {
+          closeAbove(indent)
+        }
+      }
+
+      let li: string
+      if (checkedM) {
+        li = `<li class="flex items-start gap-2"><span class="text-[#5b5ce2] shrink-0 mt-0.5">☑</span><span class="line-through text-[#9ca3af]">${processInline(checkedM[2])}</span></li>`
+      } else if (uncheckM) {
+        li = `<li class="flex items-start gap-2"><span class="text-[#9ca3af] shrink-0 mt-0.5">☐</span><span>${processInline(uncheckM[2])}</span></li>`
+      } else if (bulletM) {
+        li = `<li class="leading-relaxed">${processInline(bulletM[2])}</li>`
+      } else {
+        li = `<li class="leading-relaxed">${processInline(numberedM![2])}</li>`
+      }
+      output.push(li)
+      continue
+    }
+
+    // Non-list line — close any open lists first
+    closeAllLists()
+
     if (line.startsWith('##### ')) {
       output.push(`<h5 class="text-base font-semibold text-[#111827] mt-4 mb-1">${processInline(line.slice(6))}</h5>`)
     } else if (line.startsWith('#### ')) {
@@ -83,22 +146,8 @@ export function renderMarkdown(raw: string): string {
       output.push(
         `<blockquote class="border-l-4 border-[#5b5ce2] bg-[#f5f3ff] pl-4 pr-3 py-2 my-3 text-[#6b7280] italic rounded-r-lg">${processInline(line.slice(2))}</blockquote>`
       )
-    } else if (line.startsWith('- [x] ')) {
-      output.push(
-        `<div class="flex items-start gap-2 my-1 ml-4"><span class="text-[#5b5ce2] shrink-0 mt-0.5">☑</span><span class="line-through text-[#9ca3af]">${processInline(line.slice(6))}</span></div>`
-      )
-    } else if (line.startsWith('- [ ] ')) {
-      output.push(
-        `<div class="flex items-start gap-2 my-1 ml-4"><span class="text-[#9ca3af] shrink-0 mt-0.5">☐</span><span class="text-[#374151]">${processInline(line.slice(6))}</span></div>`
-      )
-    } else if (/^(\* |- )/.test(line)) {
-      output.push(
-        `<li class="ml-6 list-disc text-[#374151] my-0.5 leading-relaxed">${processInline(line.replace(/^(\* |- )/, ''))}</li>`
-      )
-    } else if (/^\d+\. /.test(line)) {
-      output.push(
-        `<li class="ml-6 list-decimal text-[#374151] my-0.5 leading-relaxed">${processInline(line.replace(/^\d+\. /, ''))}</li>`
-      )
+    } else if (line.trim() === '---') {
+      output.push('<hr class="border-t border-[#e5e7eb] my-4" />')
     } else if (line.trim() === '') {
       output.push('<div class="my-2"></div>')
     } else {
@@ -106,5 +155,6 @@ export function renderMarkdown(raw: string): string {
     }
   }
 
+  closeAllLists()
   return output.join('\n')
 }

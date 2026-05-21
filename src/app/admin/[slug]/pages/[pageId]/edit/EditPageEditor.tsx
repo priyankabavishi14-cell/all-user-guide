@@ -134,6 +134,60 @@ function titleToSlug(title: string): string {
     .replace(/-+/g, '-')
 }
 
+// ─── Nested list renderer ────────────────────────────────────────────────────
+
+function processLists(text: string): string {
+  const lines = text.split('\n')
+  const out: string[] = []
+  type Frame = { tag: 'ul' | 'ol'; indent: number }
+  const stack: Frame[] = []
+
+  const closeAll = () => { while (stack.length) out.push(`</${stack.pop()!.tag}>`) }
+  const closeAbove = (n: number) => {
+    while (stack.length && stack[stack.length - 1].indent > n) out.push(`</${stack.pop()!.tag}>`)
+  }
+  const openList = (tag: 'ul' | 'ol', indent: number) => {
+    const isTop = stack.length === 0
+    const cls = tag === 'ul'
+      ? isTop ? 'list-disc ml-4 my-2' : 'list-disc ml-4 mt-1'
+      : isTop ? 'list-decimal ml-4 my-2' : 'list-decimal ml-4 mt-1'
+    out.push(`<${tag} class="${cls}">`)
+    stack.push({ tag, indent })
+  }
+
+  for (const line of lines) {
+    const checkedM  = line.match(/^( *)[-*] \[x\] (.+)$/)
+    const uncheckM  = line.match(/^( *)[-*] \[ \] (.+)$/)
+    const bulletM   = line.match(/^( *)[*-] (?!\[)(.+)$/)
+    const numberedM = line.match(/^( *)\d+\. (.+)$/)
+
+    if (checkedM || uncheckM || bulletM || numberedM) {
+      const m = (checkedM || uncheckM || bulletM || numberedM)!
+      const indent = m[1].length
+      const tag: 'ul' | 'ol' = (numberedM && !checkedM && !uncheckM) ? 'ol' : 'ul'
+      if (stack.length === 0) {
+        openList(tag, indent)
+      } else if (indent > stack[stack.length - 1].indent) {
+        openList(tag, indent)
+      } else if (indent < stack[stack.length - 1].indent) {
+        closeAbove(indent)
+      }
+      if (checkedM) {
+        out.push(`<li class="flex items-center gap-2"><span class="text-[#5b5ce2]">☑</span><span class="line-through text-[#9ca3af]">${checkedM[2]}</span></li>`)
+      } else if (uncheckM) {
+        out.push(`<li class="flex items-center gap-2"><span>☐</span><span>${uncheckM[2]}</span></li>`)
+      } else {
+        out.push(`<li>${(bulletM || numberedM!)[2]}</li>`)
+      }
+    } else {
+      closeAll()
+      out.push(line)
+    }
+  }
+  closeAll()
+  return out.join('\n')
+}
+
 // ─── Markdown renderer ────────────────────────────────────────────────────────
 
 function renderMarkdown(md: string): string {
@@ -174,13 +228,8 @@ function renderMarkdown(md: string): string {
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="max-w-full h-auto my-3 rounded" />')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#5b5ce2] underline">$1</a>')
 
-  html = html
-    .replace(/^[-*] \[x\] (.+)$/gm, '<li class="ml-4 flex items-center gap-2"><span class="text-[#5b5ce2]">☑</span><span class="line-through text-[#9ca3af]">$1</span></li>')
-    .replace(/^[-*] \[ \] (.+)$/gm, '<li class="ml-4 flex items-center gap-2"><span>☐</span><span>$1</span></li>')
-
-  html = html
-    .replace(/^[*-] (.+)$/gm,  '<li class="ml-4 list-disc">$1</li>')
-    .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
+  // nested lists
+  html = processLists(html)
 
   // tables
   {
@@ -220,7 +269,7 @@ function renderMarkdown(md: string): string {
     .map((block) => {
       const t = block.trim()
       if (!t) return ''
-      if (/^<[h1-6bpldq]/.test(t)) return t
+      if (/^<[h1-6bpldquo]/.test(t)) return t
       return `<p class="mb-3">${t.replace(/\n/g, '<br/>')}</p>`
     })
     .join('\n')

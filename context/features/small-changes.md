@@ -93,18 +93,50 @@ This document defines minor but important behavior updates for the **Manage Page
 
 #### Behavior:
 - Replace the free-text Icon input with a **visual icon picker**
-- Icons sourced from `public/icons/` SVG files
-- Available icons: `location`, `sales`, `user`
+- Icons sourced from `public/icons/` SVG files (local) and Lucide icon library (global)
+- Search covers both sources; results shown in two sections: "Your Icons" and "Global Icons"
 
 #### UI:
 - Button showing the currently selected icon (or a placeholder if none)
-- Click opens a small popover grid with all available SVG icons
-- Each icon displayed as the SVG image with its name label below
-- Clicking an icon selects it, closes the popover, stores the icon name (filename without `.svg`)
+- Click opens a popover with a search input and two icon sections
+- Search filters both local and global icons instantly while typing
+- Each icon displayed with its SVG image/component and name label below
+- Clicking an icon selects it, closes the popover
 - A "None" option to clear the icon
 
 #### Rendering:
-- In Manage Pages table and Frontend Sidebar: if icon value matches a known SVG name render `<img src="/icons/{name}.svg" />`; otherwise fall back to rendering as emoji text
-- Selected icon stored as the filename without extension (e.g. `location`, `sales`, `user`)
+- Local SVG icons: stored as filename without extension; rendered as `<img src="/icons/{name}.svg" />`
+- Global Lucide icons: stored as `lucide:<name>`; rendered as inline SVG via `PageIcon` component
+- Legacy emoji/text values rendered as plain text fallback
+
+---
+
+### 6. Nested List Support (Markdown Editor)
+
+#### Behavior:
+- Markdown editor and preview support nested/indented bullet and numbered lists
+- Indentation controls nesting level (2 spaces per level)
+
+#### Bullet List Nesting:
+```
+* Level 1
+  * Level 2
+    * Level 3
+```
+
+#### Numbered List Nesting:
+```
+1. Level 1
+   1. Level 2
+      1. Level 3
+```
+
+#### Rules:
+- Each indentation level opens a new nested `<ul>` or `<ol>`
+- Returning to a lower indentation closes the deeper list
+- Mixed bullet/numbered nesting supported
+- Checkbox lists also support indentation
+- Renders correctly in editor preview and live site frontend
+- Applies to: Add Page, Edit Page, and live site page content
 
 ---
