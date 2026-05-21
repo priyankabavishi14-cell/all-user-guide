@@ -212,6 +212,9 @@ function renderMarkdown(md: string): string {
     html = out.join('\n')
   }
 
+  // horizontal rules
+  html = html.replace(/^---$/gm, '<hr class="border-t border-[#e5e7eb] my-4" />')
+
   html = html
     .split('\n\n')
     .map((block) => {
@@ -526,6 +529,19 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
     setContent(lines.join('\n'))
   }
 
+  function insertDivider() {
+    const el = editorRef.current
+    if (!el) return
+    const pos = el.selectionStart
+    const dividerText = '\n\n---\n\n'
+    const newContent = content.slice(0, pos) + dividerText + content.slice(pos)
+    setContent(newContent)
+    requestAnimationFrame(() => {
+      el.focus()
+      el.setSelectionRange(pos + dividerText.length, pos + dividerText.length)
+    })
+  }
+
   const previewHtml = content.trim() ? renderMarkdown(content) : ''
 
   // Pages available as parents (exclude self and its descendants to avoid cycles)
@@ -720,6 +736,18 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
             className="px-2.5 py-1 text-xs rounded transition-colors shrink-0 text-[#374151] hover:bg-[#e5e7eb] disabled:opacity-40"
           >
             -Col
+          </button>
+
+          <span className="w-px h-4 bg-[#e5e7eb] mx-1 shrink-0" />
+
+          {/* Section divider button */}
+          <button
+            type="button"
+            onClick={insertDivider}
+            title="Insert Section Divider"
+            className="px-2.5 py-1 text-xs rounded transition-colors shrink-0 text-[#374151] hover:bg-[#e5e7eb]"
+          >
+            ─
           </button>
         </div>
       </header>
