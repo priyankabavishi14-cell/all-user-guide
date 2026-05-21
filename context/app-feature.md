@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Markdown Editor Insert Table feature in development (toolbar button, row/column management, pipe-table markdown rendering)
+Completed — Markdown Editor Insert Table feature implemented (toolbar button ⊞, row/column management, pipe-table markdown rendering in Add Page and Edit Page)
 
 ## Goals
 
