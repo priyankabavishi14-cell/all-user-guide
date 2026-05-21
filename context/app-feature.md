@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Manage Users changes spec added (menu highlight fix, restricted access creation fix, remove Confirm Password, add password show/hide, project-specific user login fix)
+In Progress — Markdown Editor Insert Table feature in development (toolbar button, row/column management, pipe-table markdown rendering)
 
 ## Goals
 
@@ -106,6 +106,16 @@ In Progress — Manage Users changes spec added (menu highlight fix, restricted 
 - Live preview renders: bold → `<strong>`, italic → `<em>`, strikethrough → `<del>`, inline code → monospace highlight, quote → indented block with left border, small text → reduced font size
 - Supported syntax: `**bold**`, `*italic*`, `~~strikethrough~~`, `` `code` ``, `> quote`, `<small>text</small>`
 - Responsive toolbar: compact/scrollable on smaller screens
+
+### Markdown Editor Insert Table
+- "Insert Table" button (⊞) in markdown editor toolbar, positioned after the image upload button with a divider
+- Clicking Insert Table inserts a default 3-column pipe-table at cursor position with placeholder headers and 2 empty data rows
+- Table management buttons enabled when cursor is inside a table: +Row (add row at end), -Row (remove last data row), +Col (add column), -Col (remove last column)
+- Row/column management buttons disabled when cursor is outside a table
+- Generated markdown uses standard pipe-table format: `| Header | Header |`, separator line `| --- | --- |`, data rows `|  |  |`
+- Live preview renders pipe-tables as HTML `<table>` with styled header row (highlighted background), bordered cells, and alternating-friendly layout
+- Existing tables in Edit Page load and render correctly; table modifications save with the page content
+- All existing editor features (headings, text styles, lists, image upload, preview, save) remain unchanged
 
 ### Manage Pages
 - Layout: fixed left sidebar (240px) + main content area scoped to the selected project
@@ -358,6 +368,18 @@ In Progress — Manage Users changes spec added (menu highlight fix, restricted 
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-21 — Implemented Markdown Editor Insert Table
+- Added module-level table helpers to both `CreatePageEditor.tsx` and `EditPageEditor.tsx`: `isTableLine`, `isSeparatorLine`, `parseTableRow`, `getLineIndex`, `findTableBlock`
+- Updated `renderMarkdown` in both editors: line-by-line table detection converts consecutive `|`-starting lines into `<table>` HTML with styled header (`bg-[#f3f4f6]`), bordered cells, and `<thead>`/`<tbody>` structure; runs before paragraph split step
+- Added `inTable` state and updated `syncToolbarState` to detect when cursor is inside a table block
+- Added 5 table operation functions inside each editor component: `insertTable` (3-col default), `addTableRow`, `removeTableRow`, `addTableColumn`, `removeTableColumn`
+- Added toolbar section after image upload: divider, ⊞ Insert Table button (always enabled), +Row / -Row / +Col / -Col buttons (disabled when cursor is outside a table)
+- Build verified: `npm run build` passes with no TypeScript errors
+
+### 2026-05-21 — Added Markdown Editor Insert Table Spec
+- Added `context/features/markdown-editor-insert-table-spec.md` defining Insert Table feature for Add Page and Edit Page
+- Requirements: Insert Table toolbar option, row/column add/remove management, header row with highlight, standard pipe-table markdown format, live preview rendering, no changes to existing editor design or functionality
 
 ### 2026-05-13 — Added Manage Users Changes Spec
 - Defined Manage Users Changes Phase 1 spec (`context/features/manage-users-changes-spec.md`)
