@@ -149,8 +149,8 @@ function processLists(text: string): string {
   const openList = (tag: 'ul' | 'ol', indent: number) => {
     const isTop = stack.length === 0
     const cls = tag === 'ul'
-      ? isTop ? 'list-disc ml-4 my-2' : 'list-disc ml-4 mt-1'
-      : isTop ? 'list-decimal ml-4 my-2' : 'list-decimal ml-4 mt-1'
+      ? isTop ? 'list-disc pl-5 my-2' : 'list-disc pl-4 mt-1'
+      : isTop ? 'list-decimal pl-5 my-2' : 'list-decimal pl-4 mt-1'
     out.push(`<${tag} class="${cls}">`)
     stack.push({ tag, indent })
   }
@@ -303,6 +303,7 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
   const imageInputRef   = useRef<HTMLInputElement>(null)
   const autosaveTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
   const draftLabelTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isMounted       = useRef(false)
 
   const [isUploading, setIsUploading] = useState(false)
 
@@ -333,8 +334,12 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
     } catch {}
   }, [])
 
-  // Autosave debounced 1.5s after any change
+  // Mark mounted after first render so autosave skips the initial load
+  useEffect(() => { isMounted.current = true }, [])
+
+  // Autosave debounced 1.5s after any change (skips initial render)
   useEffect(() => {
+    if (!isMounted.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
       try {

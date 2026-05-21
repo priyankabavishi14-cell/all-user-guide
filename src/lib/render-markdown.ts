@@ -45,7 +45,7 @@ function processInline(raw: string): string {
 }
 
 export function renderMarkdown(raw: string): string {
-  const lines = raw.split('\n')
+  const lines = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
   const output: string[] = []
   let inCodeBlock = false
   const codeLines: string[] = []
@@ -66,8 +66,8 @@ export function renderMarkdown(raw: string): string {
   function openList(tag: 'ul' | 'ol', indent: number) {
     const isTop = listStack.length === 0
     const cls = tag === 'ul'
-      ? isTop ? 'list-disc ml-5 my-2 space-y-0.5 text-[#374151]' : 'list-disc ml-5 mt-1 space-y-0.5'
-      : isTop ? 'list-decimal ml-5 my-2 space-y-0.5 text-[#374151]' : 'list-decimal ml-5 mt-1 space-y-0.5'
+      ? isTop ? 'list-disc pl-5 my-2 space-y-0.5 text-[#374151]' : 'list-disc pl-4 mt-1 space-y-0.5'
+      : isTop ? 'list-decimal pl-5 my-2 space-y-0.5 text-[#374151]' : 'list-decimal pl-4 mt-1 space-y-0.5'
     output.push(`<${tag} class="${cls}">`)
     listStack.push({ tag, indent })
   }

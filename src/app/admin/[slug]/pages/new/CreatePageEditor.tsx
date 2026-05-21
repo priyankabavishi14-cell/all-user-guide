@@ -139,8 +139,8 @@ function processLists(text: string): string {
   const openList = (tag: 'ul' | 'ol', indent: number) => {
     const isTop = stack.length === 0
     const cls = tag === 'ul'
-      ? isTop ? 'list-disc ml-4 my-2' : 'list-disc ml-4 mt-1'
-      : isTop ? 'list-decimal ml-4 my-2' : 'list-decimal ml-4 mt-1'
+      ? isTop ? 'list-disc pl-5 my-2' : 'list-disc pl-4 mt-1'
+      : isTop ? 'list-decimal pl-5 my-2' : 'list-decimal pl-4 mt-1'
     out.push(`<${tag} class="${cls}">`)
     stack.push({ tag, indent })
   }
