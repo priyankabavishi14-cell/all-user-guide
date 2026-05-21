@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Markdown Editor Page Section Divider feature in development (divider toolbar button, horizontal rule insertion, preview rendering in Add Page and Edit Page)
+Completed — Markdown Editor Page Section Divider feature implemented (─ toolbar button, --- horizontal rule insertion, <hr> preview rendering in Add Page and Edit Page)
 
 ## Goals
 
@@ -376,6 +376,12 @@ In Progress — Markdown Editor Page Section Divider feature in development (div
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-21 — Implemented Markdown Editor Page Section Divider
+- Updated `renderMarkdown` in both `CreatePageEditor.tsx` and `EditPageEditor.tsx`: standalone `---` lines converted to `<hr class="border-t border-[#e5e7eb] my-4" />` before paragraph split step
+- Added `insertDivider()` inside each component: inserts `\n\n---\n\n` at cursor so the rule always occupies its own blank-line-separated block
+- Added `─` Section Divider toolbar button after the table buttons (with a divider separator); always enabled
+- Build verified: `npm run build` passes with no TypeScript errors
 
 ### 2026-05-21 — Added Markdown Editor Page Section Divider Spec
 - Added `context/features/markdown-editor-page-section-divider-spec.md` defining the Page Section Divider feature for Add Page and Edit Page
