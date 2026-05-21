@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Markdown Editor Dynamic Icons feature in development (dynamic icon search by keyword, instant results while typing, icon selection and preview in Add Page and Edit Page, consistent icon display across left side menu and page listing)
+Completed — Markdown Editor Dynamic Icons feature implemented (search input with instant keyword filtering in IconPicker dropdown, auto-focus on open, no-match empty state, 3 additional icons added to SVG_ICONS registry)
 
 ## Goals
 
@@ -384,6 +384,15 @@ In Progress — Markdown Editor Dynamic Icons feature in development (dynamic ic
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-21 — Implemented Markdown Editor Dynamic Icons
+- Updated `src/components/admin/IconPicker.tsx`: added search input at top of dropdown with magnifier icon; auto-focuses on open via `requestAnimationFrame`; clears query on every open
+- Filtered icon grid: `SVG_ICONS.filter(name => name.toLowerCase().includes(query))` — updates instantly on every keystroke
+- Empty-query state shows all icons; no-match state shows "No icons match…" message instead of empty grid
+- Grid is now scrollable (`max-h-48 overflow-y-auto`) to handle more icons; dropdown width expanded to `w-56`
+- Updated `src/lib/icon-utils.ts`: added `introduction`, `warehouse`, `roles` to `SVG_ICONS` (3 previously unregistered icons from `public/icons/`)
+- Existing icon selection, preview in editor, save flow, and sidebar/page-listing display all unchanged
+- Build verified: `npm run build` passes with no TypeScript errors
 
 ### 2026-05-21 — Added Markdown Editor Dynamic Icons Spec
 - Added `context/features/markdown-editor-dynamic-icons-spec.md` defining the Dynamic Icons feature for Add Page and Edit Page
