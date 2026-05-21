@@ -4,9 +4,17 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-Completed — Markdown Editor Page Section Divider feature implemented (─ toolbar button, --- horizontal rule insertion, <hr> preview rendering in Add Page and Edit Page)
+In Progress — Markdown Editor Dynamic Icons feature in development (dynamic icon search by keyword, instant results while typing, icon selection and preview in Add Page and Edit Page, consistent icon display across left side menu and page listing)
 
 ## Goals
+
+### Markdown Editor Dynamic Icons
+- Dynamic icon search in the Icon field on Add Page and Edit Page
+- User can search icons by keyword/name; matching icons display instantly while typing
+- Multiple related icons shown in search results; user selects any icon from results
+- Selected icon previews correctly in the editor before saving
+- Saved icon displays consistently across: left side menu, page listing, and live site navigation
+- No changes to existing Add/Edit Page flow; existing saved icons continue working properly
 
 ### Admin Dashboard (Project Control Panel)
 - Project-scoped dashboard with top header (logo, project breadcrumb, view live site, user profile)
@@ -376,6 +384,10 @@ Completed — Markdown Editor Page Section Divider feature implemented (─ tool
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-21 — Added Markdown Editor Dynamic Icons Spec
+- Added `context/features/markdown-editor-dynamic-icons-spec.md` defining the Dynamic Icons feature for Add Page and Edit Page
+- Requirements: dynamic icon search by keyword with instant results while typing; select icon from results with preview in editor; saved icon displays consistently in left side menu, page listing, and live site navigation; no changes to existing Add/Edit Page flow or existing saved icons
 
 ### 2026-05-21 — Implemented Markdown Editor Page Section Divider
 - Updated `renderMarkdown` in both `CreatePageEditor.tsx` and `EditPageEditor.tsx`: standalone `---` lines converted to `<hr class="border-t border-[#e5e7eb] my-4" />` before paragraph split step
