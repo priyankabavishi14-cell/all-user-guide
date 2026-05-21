@@ -247,11 +247,17 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [inTable, setInTable] = useState(false)
 
-  const toastTimer    = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const editorRef     = useRef<HTMLTextAreaElement>(null)
-  const imageInputRef = useRef<HTMLInputElement>(null)
+  const [draftLabel, setDraftLabel] = useState('')
+
+  const toastTimer      = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const editorRef       = useRef<HTMLTextAreaElement>(null)
+  const imageInputRef   = useRef<HTMLInputElement>(null)
+  const autosaveTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const draftLabelTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [isUploading, setIsUploading] = useState(false)
+
+  const draftKey = `page-draft:edit:${page.id}`
 
   const initialState: UpdatePageState = {}
   const boundAction = updatePageAction.bind(null, page.id, project.id, project.slug)
@@ -264,8 +270,37 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
     }
   }, [title, slugTouched])
 
+  // Restore draft on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(draftKey)
+      if (!raw) return
+      const draft = JSON.parse(raw) as { title?: string; icon?: string; content?: string }
+      if (draft.title)              setTitle(draft.title)
+      if (draft.icon !== undefined) setIcon(draft.icon)
+      if (draft.content)            setContent(draft.content)
+      setDraftLabel('Draft restored')
+      draftLabelTimer.current = setTimeout(() => setDraftLabel(''), 2500)
+    } catch {}
+  }, [])
+
+  // Autosave debounced 1.5s after any change
+  useEffect(() => {
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    autosaveTimer.current = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey, JSON.stringify({ title, icon, content }))
+        setDraftLabel('Draft saved')
+        if (draftLabelTimer.current) clearTimeout(draftLabelTimer.current)
+        draftLabelTimer.current = setTimeout(() => setDraftLabel(''), 2000)
+      } catch {}
+    }, 1500)
+    return () => { if (autosaveTimer.current) clearTimeout(autosaveTimer.current) }
+  }, [title, icon, content])
+
   useEffect(() => {
     if (state.success) {
+      try { localStorage.removeItem(draftKey) } catch {}
       showToast('success', 'Page updated successfully!')
       const t = setTimeout(() => router.push(`/admin/${project.slug}/pages`), 1200)
       return () => clearTimeout(t)
@@ -578,6 +613,10 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
           </span>
 
           <div className="flex-1" />
+
+          {draftLabel && (
+            <span className="text-xs text-[#9ca3af] hidden sm:inline">{draftLabel}</span>
+          )}
 
           {/* View mode */}
           <div className="flex bg-[#f3f4f6] rounded-lg p-0.5 text-xs font-medium">
