@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Markdown Editor Autosave spec added (autosave on content change for Add Page and Edit Page, background save without manual action, no data loss, no duplicate content)
+Completed — Markdown Editor Autosave implemented (debounced localStorage autosave for Add Page, debounced API autosave for Edit Page, no data loss, no duplicate content, no UI changes)
 
 ## Goals
 
@@ -402,6 +402,12 @@ In Progress — Markdown Editor Autosave spec added (autosave on content change 
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-21 — Implemented Markdown Editor Autosave
+- Created `src/app/api/autosave/route.ts` (PATCH endpoint: validates session cookie, updates page `title` + `content` in DB silently, no cache revalidation)
+- Updated `src/app/admin/[slug]/pages/new/CreatePageEditor.tsx`: debounced localStorage autosave (1.5s) keyed by `autosave_{projectId}_new`; restores draft on mount; clears on save success; shows "Draft saved" label in header
+- Updated `src/app/admin/[slug]/pages/[pageId]/edit/EditPageEditor.tsx`: debounced PATCH to `/api/autosave` (1.5s); skips first render (no change from initial values); shows "Saving…" → "Saved" label in header
+- Branch: `feature/markdown-editor-autosave`
 
 ### 2026-05-21 — Added Markdown Editor Autosave Spec
 - Defined Markdown Editor Autosave spec (`context/features/markdown-editor-autosave-spec.md`)
