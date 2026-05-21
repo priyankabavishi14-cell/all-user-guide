@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Manage Users changes spec added (menu highlight fix, restricted access creation fix, remove Confirm Password, add password show/hide, project-specific user login fix)
+In Progress — Markdown Editor Autosave spec added (autosave on content change for Add Page and Edit Page, background save without manual action, no data loss, no duplicate content)
 
 ## Goals
 
@@ -258,6 +258,16 @@ In Progress — Manage Users changes spec added (menu highlight fix, restricted 
 - Behavior rules: no duplicate image syntax, maintain cursor position after insertion, support undo/redo, allow manual editing of markdown syntax
 - Responsive: images resize on all devices; preview panel adapts accordingly
 
+### Markdown Editor Autosave
+- Applies to: Add Page and Edit Page in Manage Pages module
+- Content autosaves automatically in the background while the user types or edits; no manual save required for every change
+- Autosave triggers after content changes; saves the latest markdown editor content along with page title and related page fields if updated
+- User can continue writing without interruption; no page refresh required
+- Existing editor behavior, design, and UI remain unchanged
+- Validation: latest content always saved correctly; no duplicate content creation; no data loss during editing
+- After refresh or reopening the page, user always sees the latest saved content
+- Autosave applies to both Add Page and Edit Page flows
+
 ### Manage Users
 - Entry: left sidebar "Manage Users" link; opens Manage Users page in the main content area
 - Layout: same shell as other admin pages; "Manage Users" sidebar item highlighted when active
@@ -329,6 +339,40 @@ In Progress — Manage Users changes spec added (menu highlight fix, restricted 
 - User sees only the assigned project on login
 - Access permissions apply based on assigned role and access type
 
+### Project Specific Users — Phase 1
+
+#### 1. User Listing Refresh Issue Fix
+- Newly created user should display immediately in the users listing without manual page refresh
+- Real-time listing update after: Create user, Update user, Delete user
+- Proper success message displayed immediately after each operation
+
+#### 2. Project Specific User Login
+- Created project-specific users (Admin User / Normal User) should login successfully using their email and password
+- Authentication must work properly for both Admin User and Normal User roles
+- Invalid login issue resolved
+
+#### 3. User Login Default Flow
+- After successful login, first page opens is "Project Management" page
+- Only the assigned project is shown; other projects are not displayed
+- Assigned permissions apply correctly from the first load
+
+#### 4. Project Access Permission Flow
+- User can open their assigned project; existing project flow remains unchanged
+- Modules and pages display according to assigned permissions only
+- Restricted modules are hidden; restricted pages cannot be accessed directly via URL
+- Allowed permissions example: Dashboard, Manage Pages, Manage Users, View Pages, Edit Pages
+
+#### Access Rules
+- Admin User: access only assigned project; full project access based on assigned permissions; can manage allowed modules
+- Normal User: access only assigned project; restricted module access; only allowed permissions visible
+
+#### Notes
+- Existing project design and layout unchanged; only functionality changes
+- Unauthorized modules/pages must not display at UI or API level
+- User access fully determined by assigned role and permissions
+
+---
+
 ### Markdown Editor Headings Toolbar
 - Horizontal toolbar at the top of the markdown editor with H1 | H2 | H3 | H4 | H5 buttons
 - Clicking a heading button applies the correct markdown prefix (`#` through `#####`) at the start of the current line
@@ -358,6 +402,25 @@ In Progress — Manage Users changes spec added (menu highlight fix, restricted 
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-21 — Added Markdown Editor Autosave Spec
+- Defined Markdown Editor Autosave spec (`context/features/markdown-editor-autosave-spec.md`)
+- Autosave triggers on content change in Add Page and Edit Page (Manage Pages module)
+- Saves latest markdown content, page title, and related fields in the background without manual action
+- No data loss, no duplicate content creation, no page refresh required
+- Existing editor design and UI unchanged; latest saved content visible after refresh or reopen
+
+### 2026-05-15 — Implemented View Live Site Restricted Access (Phase 2 — 5.3)
+- Added Section 5.3 to `context/features/project-specific-user-spec.md`: View Live Site restricted access — sidebar shows only allowed pages, direct URL access to restricted pages shows "Access Denied", welcome-screen-off redirect goes to first allowed page
+- Updated `src/components/frontend/FrontendSidebar.tsx`: orphaned allowed child pages (whose parent is not in the allowed set) now render as top-level sidebar items instead of being hidden
+- Server pages (`app/[slug]/page.tsx`, `app/[slug]/pages/[pageSlug]/page.tsx`) already filtered `projectPages` for restricted viewers; sidebar fix ensures hierarchy edge case is handled
+
+### 2026-05-13 — Added Project Specific Users Phase 1 Spec
+- Defined Project Specific Users Phase 1 spec (`context/features/project-specific-user-spec.md`)
+- Fix 1: User listing does not refresh after create/update/delete — newly created user not shown until manual page refresh; fix to update listing immediately
+- Fix 2: Project-specific user login fails ("Invalid email or password") for both Admin User and Normal User roles
+- Fix 3: Login default flow — after login, "Project Management" page opens showing only the assigned project with permissions applied
+- Fix 4: Project access permission flow — modules and pages render based on assigned permissions only; restricted items hidden from UI and blocked at API level
 
 ### 2026-05-13 — Added Manage Users Changes Spec
 - Defined Manage Users Changes Phase 1 spec (`context/features/manage-users-changes-spec.md`)
