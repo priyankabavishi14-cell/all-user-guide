@@ -6,13 +6,11 @@ import Link from 'next/link'
 import type { Project, Page } from '@/types'
 import { updatePageAction, type UpdatePageState } from './actions'
 import IconPicker from '@/components/admin/IconPicker'
-import { renderMarkdown } from '@/lib/render-markdown'
 
 interface Props {
   project: Project
   page: Page
   existingPages: Page[]
-  availableIcons: string[]
 }
 
 type ViewMode = 'editor' | 'preview' | 'split'
@@ -286,7 +284,7 @@ function renderMarkdown(md: string): string {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function EditPageEditor({ project, page, existingPages, availableIcons }: Props) {
+export default function EditPageEditor({ project, page, existingPages }: Props) {
   const router = useRouter()
   const [viewMode, setViewMode]         = useState<ViewMode>('split')
   const [title, setTitle]               = useState(page.title)
@@ -300,6 +298,7 @@ export default function EditPageEditor({ project, page, existingPages, available
   const [inTable, setInTable] = useState(false)
 
   const [draftLabel, setDraftLabel] = useState('')
+  const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
 
   const toastTimer      = useRef<ReturnType<typeof setTimeout> | null>(null)
   const editorRef       = useRef<HTMLTextAreaElement>(null)
@@ -348,13 +347,15 @@ export default function EditPageEditor({ project, page, existingPages, available
   useEffect(() => {
     if (!isMounted.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    setAutosaveStatus('saving')
     autosaveTimer.current = setTimeout(() => {
       try {
         localStorage.setItem(draftKey, JSON.stringify({ title, icon, content }))
+        setAutosaveStatus('saved')
         setDraftLabel('Draft saved')
         if (draftLabelTimer.current) clearTimeout(draftLabelTimer.current)
-        draftLabelTimer.current = setTimeout(() => setDraftLabel(''), 2000)
-      } catch {}
+        draftLabelTimer.current = setTimeout(() => { setDraftLabel(''); setAutosaveStatus('idle') }, 2000)
+      } catch { setAutosaveStatus('idle') }
     }, 1500)
     return () => { if (autosaveTimer.current) clearTimeout(autosaveTimer.current) }
   }, [title, icon, content])
@@ -1035,7 +1036,7 @@ export default function EditPageEditor({ project, page, existingPages, available
           {/* Icon */}
           <div>
             <label className="block text-xs font-semibold text-[#374151] mb-1">Icon</label>
-            <IconPicker value={icon} onChange={setIcon} icons={availableIcons} />
+            <IconPicker value={icon} onChange={setIcon} />
           </div>
 
           <div className="bg-[#f0f0ff] border border-[#c7c7f5] rounded-lg p-3 text-xs text-[#5b5ce2] leading-relaxed">
