@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #5b5ce2;
+  --color-primary-end: #7c3aed;
+  --color-text-dark: #111827;
+  --color-text-light: #6b7280;
+  --color-border: #e5e7eb;
+  --color-bg-light: #f9fafb;
+}
+
+/* Prose content: reliable list rendering regardless of Tailwind purging */
+.prose-content ul,
+.prose-content ol {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.prose-content ul {
+  list-style-type: disc;
+}
+.prose-content ol {
+  list-style-type: decimal;
+}
+.prose-content li {
+  margin-bottom: 0.25rem;
+  line-height: 1.625;
+}
+.prose-content ul ul,
+.prose-content ol ol,
+.prose-content ul ol,
+.prose-content ol ul {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}

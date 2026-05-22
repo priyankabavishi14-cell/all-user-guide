@@ -1,3 +1,5 @@
-export default function Page() {
-  return <h1>User Guide</h1>;
+import { redirect } from 'next/navigation';
+
+export default function RootPage() {
+  redirect('/admin/login');
 }
