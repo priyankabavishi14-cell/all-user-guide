@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-Completed — Markdown Editor Autosave implemented (debounced localStorage autosave for Add Page, debounced API autosave for Edit Page, no data loss, no duplicate content, no UI changes)
+Completed — Markdown Editor Insert Table feature implemented (toolbar button ⊞, row/column management, pipe-table markdown rendering in Add Page and Edit Page)
 
 ## Goals
 
@@ -106,6 +106,16 @@ Completed — Markdown Editor Autosave implemented (debounced localStorage autos
 - Live preview renders: bold → `<strong>`, italic → `<em>`, strikethrough → `<del>`, inline code → monospace highlight, quote → indented block with left border, small text → reduced font size
 - Supported syntax: `**bold**`, `*italic*`, `~~strikethrough~~`, `` `code` ``, `> quote`, `<small>text</small>`
 - Responsive toolbar: compact/scrollable on smaller screens
+
+### Markdown Editor Insert Table
+- "Insert Table" button (⊞) in markdown editor toolbar, positioned after the image upload button with a divider
+- Clicking Insert Table inserts a default 3-column pipe-table at cursor position with placeholder headers and 2 empty data rows
+- Table management buttons enabled when cursor is inside a table: +Row (add row at end), -Row (remove last data row), +Col (add column), -Col (remove last column)
+- Row/column management buttons disabled when cursor is outside a table
+- Generated markdown uses standard pipe-table format: `| Header | Header |`, separator line `| --- | --- |`, data rows `|  |  |`
+- Live preview renders pipe-tables as HTML `<table>` with styled header row (highlighted background), bordered cells, and alternating-friendly layout
+- Existing tables in Edit Page load and render correctly; table modifications save with the page content
+- All existing editor features (headings, text styles, lists, image upload, preview, save) remain unchanged
 
 ### Manage Pages
 - Layout: fixed left sidebar (240px) + main content area scoped to the selected project
@@ -403,30 +413,17 @@ Completed — Markdown Editor Autosave implemented (debounced localStorage autos
 
 ## History
 
-### 2026-05-21 — Implemented Markdown Editor Autosave
-- Created `src/app/api/autosave/route.ts` (PATCH endpoint: validates session cookie, updates page `title` + `content` in DB silently, no cache revalidation)
-- Updated `src/app/admin/[slug]/pages/new/CreatePageEditor.tsx`: debounced localStorage autosave (1.5s) keyed by `autosave_{projectId}_new`; restores draft on mount; clears on save success; shows "Draft saved" label in header
-- Updated `src/app/admin/[slug]/pages/[pageId]/edit/EditPageEditor.tsx`: debounced PATCH to `/api/autosave` (1.5s); skips first render (no change from initial values); shows "Saving…" → "Saved" label in header
-- Branch: `feature/markdown-editor-autosave`
+### 2026-05-21 — Implemented Markdown Editor Insert Table
+- Added module-level table helpers to both `CreatePageEditor.tsx` and `EditPageEditor.tsx`: `isTableLine`, `isSeparatorLine`, `parseTableRow`, `getLineIndex`, `findTableBlock`
+- Updated `renderMarkdown` in both editors: line-by-line table detection converts consecutive `|`-starting lines into `<table>` HTML with styled header (`bg-[#f3f4f6]`), bordered cells, and `<thead>`/`<tbody>` structure; runs before paragraph split step
+- Added `inTable` state and updated `syncToolbarState` to detect when cursor is inside a table block
+- Added 5 table operation functions inside each editor component: `insertTable` (3-col default), `addTableRow`, `removeTableRow`, `addTableColumn`, `removeTableColumn`
+- Added toolbar section after image upload: divider, ⊞ Insert Table button (always enabled), +Row / -Row / +Col / -Col buttons (disabled when cursor is outside a table)
+- Build verified: `npm run build` passes with no TypeScript errors
 
-### 2026-05-21 — Added Markdown Editor Autosave Spec
-- Defined Markdown Editor Autosave spec (`context/features/markdown-editor-autosave-spec.md`)
-- Autosave triggers on content change in Add Page and Edit Page (Manage Pages module)
-- Saves latest markdown content, page title, and related fields in the background without manual action
-- No data loss, no duplicate content creation, no page refresh required
-- Existing editor design and UI unchanged; latest saved content visible after refresh or reopen
-
-### 2026-05-15 — Implemented View Live Site Restricted Access (Phase 2 — 5.3)
-- Added Section 5.3 to `context/features/project-specific-user-spec.md`: View Live Site restricted access — sidebar shows only allowed pages, direct URL access to restricted pages shows "Access Denied", welcome-screen-off redirect goes to first allowed page
-- Updated `src/components/frontend/FrontendSidebar.tsx`: orphaned allowed child pages (whose parent is not in the allowed set) now render as top-level sidebar items instead of being hidden
-- Server pages (`app/[slug]/page.tsx`, `app/[slug]/pages/[pageSlug]/page.tsx`) already filtered `projectPages` for restricted viewers; sidebar fix ensures hierarchy edge case is handled
-
-### 2026-05-13 — Added Project Specific Users Phase 1 Spec
-- Defined Project Specific Users Phase 1 spec (`context/features/project-specific-user-spec.md`)
-- Fix 1: User listing does not refresh after create/update/delete — newly created user not shown until manual page refresh; fix to update listing immediately
-- Fix 2: Project-specific user login fails ("Invalid email or password") for both Admin User and Normal User roles
-- Fix 3: Login default flow — after login, "Project Management" page opens showing only the assigned project with permissions applied
-- Fix 4: Project access permission flow — modules and pages render based on assigned permissions only; restricted items hidden from UI and blocked at API level
+### 2026-05-21 — Added Markdown Editor Insert Table Spec
+- Added `context/features/markdown-editor-insert-table-spec.md` defining Insert Table feature for Add Page and Edit Page
+- Requirements: Insert Table toolbar option, row/column add/remove management, header row with highlight, standard pipe-table markdown format, live preview rendering, no changes to existing editor design or functionality
 
 ### 2026-05-13 — Added Manage Users Changes Spec
 - Defined Manage Users Changes Phase 1 spec (`context/features/manage-users-changes-spec.md`)

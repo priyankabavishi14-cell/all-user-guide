@@ -99,6 +99,33 @@ function buildListPrefix(type: ListType, idx: number): string {
   return '- [ ] '
 }
 
+// ─── Table helpers ────────────────────────────────────────────────────────────
+
+function isTableLine(line: string): boolean {
+  return line.trimStart().startsWith('|')
+}
+
+function isSeparatorLine(line: string): boolean {
+  return /^\|[\s|:-]+\|$/.test(line.trim())
+}
+
+function parseTableRow(line: string): string[] {
+  return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim())
+}
+
+function getLineIndex(text: string, pos: number): number {
+  return text.slice(0, pos).split('\n').length - 1
+}
+
+function findTableBlock(lines: string[], lineIdx: number): { start: number; end: number } | null {
+  if (!isTableLine(lines[lineIdx])) return null
+  let start = lineIdx
+  while (start > 0 && isTableLine(lines[start - 1])) start--
+  let end = lineIdx
+  while (end < lines.length - 1 && isTableLine(lines[end + 1])) end++
+  return { start, end }
+}
+
 // ─── Slug helpers ─────────────────────────────────────────────────────────────
 
 function titleToSlug(title: string): string {
@@ -110,7 +137,100 @@ function titleToSlug(title: string): string {
     .replace(/-+/g, '-')
 }
 
-const AUTOSAVE_DELAY = 1500
+// ─── Markdown renderer ────────────────────────────────────────────────────────
+
+function renderMarkdown(md: string): string {
+  const smallBits: string[] = []
+  let html = md.replace(/<small>([\s\S]*?)<\/small>/g, (_m, inner) => {
+    smallBits.push(inner)
+    return `\x00SMALL${smallBits.length - 1}\x00`
+  })
+
+  html = html
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+
+  html = html.replace(/```[\w]*\n?([\s\S]*?)```/g, (_m, code) =>
+    `<pre class="bg-gray-100 rounded p-3 text-sm font-mono overflow-x-auto my-3 whitespace-pre-wrap">${code.trim()}</pre>`
+  )
+
+  html = html
+    .replace(/^#{6} (.+)$/gm, '<h6 class="text-sm font-semibold mt-3 mb-1">$1</h6>')
+    .replace(/^#{5} (.+)$/gm, '<h5 class="text-sm font-bold mt-3 mb-1">$1</h5>')
+    .replace(/^#{4} (.+)$/gm, '<h4 class="text-base font-bold mt-4 mb-1">$1</h4>')
+    .replace(/^#{3} (.+)$/gm, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>')
+    .replace(/^#{2} (.+)$/gm, '<h2 class="text-xl font-bold mt-5 mb-2">$1</h2>')
+    .replace(/^# (.+)$/gm,    '<h1 class="text-2xl font-bold mt-6 mb-3">$1</h1>')
+
+  html = html.replace(
+    /^&gt; (.+)$/gm,
+    '<blockquote class="border-l-4 border-[#5b5ce2] pl-3 text-[#6b7280] italic my-2">$1</blockquote>'
+  )
+
+  html = html
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,     '<strong>$1</strong>')
+    .replace(/~~(.+?)~~/g,         '<del>$1</del>')
+    .replace(/\*(.+?)\*/g,         '<em>$1</em>')
+    .replace(/`([^`]+)`/g,         '<code class="bg-gray-100 px-1 rounded text-sm font-mono">$1</code>')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="max-w-full h-auto my-3 rounded" />')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#5b5ce2] underline">$1</a>')
+
+  html = html
+    .replace(/^[-*] \[x\] (.+)$/gm, '<li class="ml-4 flex items-center gap-2"><span class="text-[#5b5ce2]">☑</span><span class="line-through text-[#9ca3af]">$1</span></li>')
+    .replace(/^[-*] \[ \] (.+)$/gm, '<li class="ml-4 flex items-center gap-2"><span>☐</span><span>$1</span></li>')
+
+  html = html
+    .replace(/^[*-] (.+)$/gm,  '<li class="ml-4 list-disc">$1</li>')
+    .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
+
+  // tables
+  {
+    const srcLines = html.split('\n')
+    const out: string[] = []
+    let i = 0
+    while (i < srcLines.length) {
+      if (isTableLine(srcLines[i])) {
+        const tLines: string[] = []
+        while (i < srcLines.length && isTableLine(srcLines[i])) { tLines.push(srcLines[i]); i++ }
+        const sepIdx = tLines.findIndex(isSeparatorLine)
+        if (sepIdx >= 1) {
+          const headers  = parseTableRow(tLines[0])
+          const dataRows = tLines.slice(sepIdx + 1).map(parseTableRow)
+          const thHtml = headers.map(c =>
+            `<th class="border border-[#e5e7eb] bg-[#f3f4f6] px-3 py-2 text-left text-xs font-semibold text-[#374151]">${c}</th>`
+          ).join('')
+          const tbHtml = dataRows.map(row =>
+            `<tr>${row.map(c => `<td class="border border-[#e5e7eb] px-3 py-2 text-xs">${c}</td>`).join('')}</tr>`
+          ).join('')
+          out.push(`<table class="w-full border-collapse border border-[#e5e7eb] my-3"><thead><tr>${thHtml}</tr></thead><tbody>${tbHtml}</tbody></table>`)
+        } else {
+          out.push(...tLines)
+        }
+      } else {
+        out.push(srcLines[i]); i++
+      }
+    }
+    html = out.join('\n')
+  }
+
+  html = html
+    .split('\n\n')
+    .map((block) => {
+      const t = block.trim()
+      if (!t) return ''
+      if (/^<[h1-6bpldq]/.test(t)) return t
+      return `<p class="mb-3">${t.replace(/\n/g, '<br/>')}</p>`
+    })
+    .join('\n')
+
+  html = html.replace(/\x00SMALL(\d+)\x00/g, (_, i) =>
+    `<small class="text-xs">${smallBits[parseInt(i)]}</small>`
+  )
+
+  return html
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -125,7 +245,7 @@ export default function EditPageEditor({ project, page, existingPages, available
   const [activeHeading, setActiveHeading]   = useState<number | null>(null)
   const [activeStyles, setActiveStyles]     = useState<Set<string>>(new Set())
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
-  const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [inTable, setInTable] = useState(false)
 
   const toastTimer      = useRef<ReturnType<typeof setTimeout> | null>(null)
   const autosaveTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -333,6 +453,8 @@ export default function EditPageEditor({ project, page, existingPages, available
     if (!el) return
     setActiveHeading(detectHeadingLevel(el.value, el.selectionStart))
     setActiveStyles(detectActiveStyles(el.value, el.selectionStart, el.selectionEnd))
+    const lines = el.value.split('\n')
+    setInTable(!!findTableBlock(lines, getLineIndex(el.value, el.selectionStart)))
   }
 
   function applyHeading(level: number) {
@@ -427,6 +549,90 @@ export default function EditPageEditor({ project, page, existingPages, available
         el.setSelectionRange(newCursor, newCursor)
       })
     }
+  }
+
+  function insertTable() {
+    const el = editorRef.current
+    if (!el) return
+    const pos = el.selectionStart
+    const tableText = '\n| Header 1 | Header 2 | Header 3 |\n| --- | --- | --- |\n|  |  |  |\n|  |  |  |\n'
+    const newContent = content.slice(0, pos) + tableText + content.slice(pos)
+    setContent(newContent)
+    requestAnimationFrame(() => {
+      el.focus()
+      el.setSelectionRange(pos + tableText.length, pos + tableText.length)
+    })
+  }
+
+  function addTableRow() {
+    const el = editorRef.current
+    if (!el) return
+    const lines = content.split('\n')
+    const lineIdx = getLineIndex(content, el.selectionStart)
+    const block = findTableBlock(lines, lineIdx)
+    if (!block) return
+    const tLines = lines.slice(block.start, block.end + 1)
+    const sepIdx = tLines.findIndex(isSeparatorLine)
+    if (sepIdx === -1) return
+    const colCount = parseTableRow(tLines[0]).length
+    const newRow = '| ' + Array(colCount).fill(' ').join(' | ') + ' |'
+    lines.splice(block.end + 1, 0, newRow)
+    setContent(lines.join('\n'))
+  }
+
+  function removeTableRow() {
+    const el = editorRef.current
+    if (!el) return
+    const lines = content.split('\n')
+    const lineIdx = getLineIndex(content, el.selectionStart)
+    const block = findTableBlock(lines, lineIdx)
+    if (!block) return
+    const tLines = lines.slice(block.start, block.end + 1)
+    const sepIdx = tLines.findIndex(isSeparatorLine)
+    if (sepIdx === -1 || tLines.length - sepIdx - 1 <= 0) return
+    lines.splice(block.end, 1)
+    setContent(lines.join('\n'))
+  }
+
+  function addTableColumn() {
+    const el = editorRef.current
+    if (!el) return
+    const lines = content.split('\n')
+    const lineIdx = getLineIndex(content, el.selectionStart)
+    const block = findTableBlock(lines, lineIdx)
+    if (!block) return
+    const tLines = lines.slice(block.start, block.end + 1)
+    const sepIdx = tLines.findIndex(isSeparatorLine)
+    if (sepIdx === -1) return
+    const headerCount = parseTableRow(tLines[0]).length
+    const newTLines = tLines.map((line, i) => {
+      const cells = parseTableRow(line)
+      if (i === sepIdx) cells.push('---')
+      else if (i < sepIdx) cells.push(`Header ${headerCount + 1}`)
+      else cells.push('')
+      return '| ' + cells.join(' | ') + ' |'
+    })
+    lines.splice(block.start, block.end - block.start + 1, ...newTLines)
+    setContent(lines.join('\n'))
+  }
+
+  function removeTableColumn() {
+    const el = editorRef.current
+    if (!el) return
+    const lines = content.split('\n')
+    const lineIdx = getLineIndex(content, el.selectionStart)
+    const block = findTableBlock(lines, lineIdx)
+    if (!block) return
+    const tLines = lines.slice(block.start, block.end + 1)
+    const sepIdx = tLines.findIndex(isSeparatorLine)
+    if (sepIdx === -1 || parseTableRow(tLines[0]).length <= 1) return
+    const newTLines = tLines.map(line => {
+      const cells = parseTableRow(line)
+      cells.pop()
+      return '| ' + cells.join(' | ') + ' |'
+    })
+    lines.splice(block.start, block.end - block.start + 1, ...newTLines)
+    setContent(lines.join('\n'))
   }
 
   const previewHtml = content.trim() ? renderMarkdown(content) : ''
@@ -583,6 +789,54 @@ export default function EditPageEditor({ project, page, existingPages, available
               if (file) handleImageUpload(file)
             }}
           />
+
+          <span className="w-px h-4 bg-[#e5e7eb] mx-1 shrink-0" />
+
+          {/* Table buttons */}
+          <button
+            type="button"
+            onClick={insertTable}
+            title="Insert Table"
+            className="px-2.5 py-1 text-xs rounded transition-colors shrink-0 text-[#374151] hover:bg-[#e5e7eb]"
+          >
+            ⊞
+          </button>
+          <button
+            type="button"
+            onClick={addTableRow}
+            title="Add Row"
+            disabled={!inTable}
+            className="px-2.5 py-1 text-xs rounded transition-colors shrink-0 text-[#374151] hover:bg-[#e5e7eb] disabled:opacity-40"
+          >
+            +Row
+          </button>
+          <button
+            type="button"
+            onClick={removeTableRow}
+            title="Remove Row"
+            disabled={!inTable}
+            className="px-2.5 py-1 text-xs rounded transition-colors shrink-0 text-[#374151] hover:bg-[#e5e7eb] disabled:opacity-40"
+          >
+            -Row
+          </button>
+          <button
+            type="button"
+            onClick={addTableColumn}
+            title="Add Column"
+            disabled={!inTable}
+            className="px-2.5 py-1 text-xs rounded transition-colors shrink-0 text-[#374151] hover:bg-[#e5e7eb] disabled:opacity-40"
+          >
+            +Col
+          </button>
+          <button
+            type="button"
+            onClick={removeTableColumn}
+            title="Remove Column"
+            disabled={!inTable}
+            className="px-2.5 py-1 text-xs rounded transition-colors shrink-0 text-[#374151] hover:bg-[#e5e7eb] disabled:opacity-40"
+          >
+            -Col
+          </button>
         </div>
       </header>
 
