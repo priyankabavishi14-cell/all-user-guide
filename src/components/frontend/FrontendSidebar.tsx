@@ -9,10 +9,16 @@ interface Props {
   projectSlug: string
   pages: Page[]
   activePageSlug?: string
+  readerTypeToken?: string
   onNavigate?: () => void
 }
 
-export default function FrontendSidebar({ projectSlug, pages, activePageSlug, onNavigate }: Props) {
+export default function FrontendSidebar({ projectSlug, pages, activePageSlug, readerTypeToken, onNavigate }: Props) {
+  function pageHref(pageSlug: string) {
+    return readerTypeToken
+      ? `/${projectSlug}/r/${readerTypeToken}/pages/${pageSlug}`
+      : `/${projectSlug}/pages/${pageSlug}`
+  }
   const rootPages = pages.filter((p) => p.parentId === null)
   const childMap = pages.reduce<Record<string, Page[]>>((acc, page) => {
     if (page.parentId) {
@@ -58,7 +64,7 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, on
               <div key={page.id}>
                 <div className="flex items-center gap-1">
                   <Link
-                    href={`/${projectSlug}/pages/${page.slug}`}
+                    href={pageHref(page.slug)}
                     onClick={onNavigate}
                     className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                       isActive
@@ -90,7 +96,7 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, on
                       return (
                         <Link
                           key={child.id}
-                          href={`/${projectSlug}/pages/${child.slug}`}
+                          href={pageHref(child.slug)}
                           onClick={onNavigate}
                           className={`flex items-center gap-2 pl-6 pr-3 py-1.5 rounded-lg text-sm transition-colors ${
                             isChildActive

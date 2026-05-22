@@ -276,6 +276,7 @@ export type PageWhereInput = {
   parent?: Prisma.XOR<Prisma.PageNullableScalarRelationFilter, Prisma.PageWhereInput> | null
   children?: Prisma.PageListRelationFilter
   pagePermissions?: Prisma.PagePermissionListRelationFilter
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionListRelationFilter
 }
 
 export type PageOrderByWithRelationInput = {
@@ -295,6 +296,7 @@ export type PageOrderByWithRelationInput = {
   parent?: Prisma.PageOrderByWithRelationInput
   children?: Prisma.PageOrderByRelationAggregateInput
   pagePermissions?: Prisma.PagePermissionOrderByRelationAggregateInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionOrderByRelationAggregateInput
 }
 
 export type PageWhereUniqueInput = Prisma.AtLeast<{
@@ -318,6 +320,7 @@ export type PageWhereUniqueInput = Prisma.AtLeast<{
   parent?: Prisma.XOR<Prisma.PageNullableScalarRelationFilter, Prisma.PageWhereInput> | null
   children?: Prisma.PageListRelationFilter
   pagePermissions?: Prisma.PagePermissionListRelationFilter
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionListRelationFilter
 }, "id" | "projectId_slug">
 
 export type PageOrderByWithAggregationInput = {
@@ -373,6 +376,7 @@ export type PageCreateInput = {
   parent?: Prisma.PageCreateNestedOneWithoutChildrenInput
   children?: Prisma.PageCreateNestedManyWithoutParentInput
   pagePermissions?: Prisma.PagePermissionCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateInput = {
@@ -390,6 +394,7 @@ export type PageUncheckedCreateInput = {
   updatedAt?: Date | string
   children?: Prisma.PageUncheckedCreateNestedManyWithoutParentInput
   pagePermissions?: Prisma.PagePermissionUncheckedCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageUpdateInput = {
@@ -407,6 +412,7 @@ export type PageUpdateInput = {
   parent?: Prisma.PageUpdateOneWithoutChildrenNestedInput
   children?: Prisma.PageUpdateManyWithoutParentNestedInput
   pagePermissions?: Prisma.PagePermissionUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateInput = {
@@ -424,6 +430,7 @@ export type PageUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.PageUncheckedUpdateManyWithoutParentNestedInput
   pagePermissions?: Prisma.PagePermissionUncheckedUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageCreateManyInput = {
@@ -669,6 +676,20 @@ export type PageUpdateOneRequiredWithoutPagePermissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PageUpdateToOneWithWhereWithoutPagePermissionsInput, Prisma.PageUpdateWithoutPagePermissionsInput>, Prisma.PageUncheckedUpdateWithoutPagePermissionsInput>
 }
 
+export type PageCreateNestedOneWithoutReaderTypeSelectionsInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutReaderTypeSelectionsInput, Prisma.PageUncheckedCreateWithoutReaderTypeSelectionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutReaderTypeSelectionsInput
+  connect?: Prisma.PageWhereUniqueInput
+}
+
+export type PageUpdateOneRequiredWithoutReaderTypeSelectionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutReaderTypeSelectionsInput, Prisma.PageUncheckedCreateWithoutReaderTypeSelectionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutReaderTypeSelectionsInput
+  upsert?: Prisma.PageUpsertWithoutReaderTypeSelectionsInput
+  connect?: Prisma.PageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PageUpdateToOneWithWhereWithoutReaderTypeSelectionsInput, Prisma.PageUpdateWithoutReaderTypeSelectionsInput>, Prisma.PageUncheckedUpdateWithoutReaderTypeSelectionsInput>
+}
+
 export type PageCreateWithoutProjectInput = {
   id?: string
   title: string
@@ -683,6 +704,7 @@ export type PageCreateWithoutProjectInput = {
   parent?: Prisma.PageCreateNestedOneWithoutChildrenInput
   children?: Prisma.PageCreateNestedManyWithoutParentInput
   pagePermissions?: Prisma.PagePermissionCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateWithoutProjectInput = {
@@ -699,6 +721,7 @@ export type PageUncheckedCreateWithoutProjectInput = {
   updatedAt?: Date | string
   children?: Prisma.PageUncheckedCreateNestedManyWithoutParentInput
   pagePermissions?: Prisma.PagePermissionUncheckedCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageCreateOrConnectWithoutProjectInput = {
@@ -759,6 +782,7 @@ export type PageCreateWithoutChildrenInput = {
   project: Prisma.ProjectCreateNestedOneWithoutPagesInput
   parent?: Prisma.PageCreateNestedOneWithoutChildrenInput
   pagePermissions?: Prisma.PagePermissionCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateWithoutChildrenInput = {
@@ -775,6 +799,7 @@ export type PageUncheckedCreateWithoutChildrenInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   pagePermissions?: Prisma.PagePermissionUncheckedCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageCreateOrConnectWithoutChildrenInput = {
@@ -796,6 +821,7 @@ export type PageCreateWithoutParentInput = {
   project: Prisma.ProjectCreateNestedOneWithoutPagesInput
   children?: Prisma.PageCreateNestedManyWithoutParentInput
   pagePermissions?: Prisma.PagePermissionCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateWithoutParentInput = {
@@ -812,6 +838,7 @@ export type PageUncheckedCreateWithoutParentInput = {
   updatedAt?: Date | string
   children?: Prisma.PageUncheckedCreateNestedManyWithoutParentInput
   pagePermissions?: Prisma.PagePermissionUncheckedCreateNestedManyWithoutPageInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageCreateOrConnectWithoutParentInput = {
@@ -849,6 +876,7 @@ export type PageUpdateWithoutChildrenInput = {
   project?: Prisma.ProjectUpdateOneRequiredWithoutPagesNestedInput
   parent?: Prisma.PageUpdateOneWithoutChildrenNestedInput
   pagePermissions?: Prisma.PagePermissionUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateWithoutChildrenInput = {
@@ -865,6 +893,7 @@ export type PageUncheckedUpdateWithoutChildrenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pagePermissions?: Prisma.PagePermissionUncheckedUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageUpsertWithWhereUniqueWithoutParentInput = {
@@ -897,6 +926,7 @@ export type PageCreateWithoutPagePermissionsInput = {
   project: Prisma.ProjectCreateNestedOneWithoutPagesInput
   parent?: Prisma.PageCreateNestedOneWithoutChildrenInput
   children?: Prisma.PageCreateNestedManyWithoutParentInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateWithoutPagePermissionsInput = {
@@ -913,6 +943,7 @@ export type PageUncheckedCreateWithoutPagePermissionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.PageUncheckedCreateNestedManyWithoutParentInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageCreateOrConnectWithoutPagePermissionsInput = {
@@ -945,6 +976,7 @@ export type PageUpdateWithoutPagePermissionsInput = {
   project?: Prisma.ProjectUpdateOneRequiredWithoutPagesNestedInput
   parent?: Prisma.PageUpdateOneWithoutChildrenNestedInput
   children?: Prisma.PageUpdateManyWithoutParentNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateWithoutPagePermissionsInput = {
@@ -961,6 +993,91 @@ export type PageUncheckedUpdateWithoutPagePermissionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.PageUncheckedUpdateManyWithoutParentNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedUpdateManyWithoutPageNestedInput
+}
+
+export type PageCreateWithoutReaderTypeSelectionsInput = {
+  id?: string
+  title: string
+  slug: string
+  sequence?: number
+  icon?: string | null
+  description?: string | null
+  content?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutPagesInput
+  parent?: Prisma.PageCreateNestedOneWithoutChildrenInput
+  children?: Prisma.PageCreateNestedManyWithoutParentInput
+  pagePermissions?: Prisma.PagePermissionCreateNestedManyWithoutPageInput
+}
+
+export type PageUncheckedCreateWithoutReaderTypeSelectionsInput = {
+  id?: string
+  projectId: string
+  title: string
+  slug: string
+  sequence?: number
+  icon?: string | null
+  parentId?: string | null
+  description?: string | null
+  content?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.PageUncheckedCreateNestedManyWithoutParentInput
+  pagePermissions?: Prisma.PagePermissionUncheckedCreateNestedManyWithoutPageInput
+}
+
+export type PageCreateOrConnectWithoutReaderTypeSelectionsInput = {
+  where: Prisma.PageWhereUniqueInput
+  create: Prisma.XOR<Prisma.PageCreateWithoutReaderTypeSelectionsInput, Prisma.PageUncheckedCreateWithoutReaderTypeSelectionsInput>
+}
+
+export type PageUpsertWithoutReaderTypeSelectionsInput = {
+  update: Prisma.XOR<Prisma.PageUpdateWithoutReaderTypeSelectionsInput, Prisma.PageUncheckedUpdateWithoutReaderTypeSelectionsInput>
+  create: Prisma.XOR<Prisma.PageCreateWithoutReaderTypeSelectionsInput, Prisma.PageUncheckedCreateWithoutReaderTypeSelectionsInput>
+  where?: Prisma.PageWhereInput
+}
+
+export type PageUpdateToOneWithWhereWithoutReaderTypeSelectionsInput = {
+  where?: Prisma.PageWhereInput
+  data: Prisma.XOR<Prisma.PageUpdateWithoutReaderTypeSelectionsInput, Prisma.PageUncheckedUpdateWithoutReaderTypeSelectionsInput>
+}
+
+export type PageUpdateWithoutReaderTypeSelectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutPagesNestedInput
+  parent?: Prisma.PageUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.PageUpdateManyWithoutParentNestedInput
+  pagePermissions?: Prisma.PagePermissionUpdateManyWithoutPageNestedInput
+}
+
+export type PageUncheckedUpdateWithoutReaderTypeSelectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.PageUncheckedUpdateManyWithoutParentNestedInput
+  pagePermissions?: Prisma.PagePermissionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageCreateManyProjectInput = {
@@ -991,6 +1108,7 @@ export type PageUpdateWithoutProjectInput = {
   parent?: Prisma.PageUpdateOneWithoutChildrenNestedInput
   children?: Prisma.PageUpdateManyWithoutParentNestedInput
   pagePermissions?: Prisma.PagePermissionUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateWithoutProjectInput = {
@@ -1007,6 +1125,7 @@ export type PageUncheckedUpdateWithoutProjectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.PageUncheckedUpdateManyWithoutParentNestedInput
   pagePermissions?: Prisma.PagePermissionUncheckedUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateManyWithoutProjectInput = {
@@ -1051,6 +1170,7 @@ export type PageUpdateWithoutParentInput = {
   project?: Prisma.ProjectUpdateOneRequiredWithoutPagesNestedInput
   children?: Prisma.PageUpdateManyWithoutParentNestedInput
   pagePermissions?: Prisma.PagePermissionUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateWithoutParentInput = {
@@ -1067,6 +1187,7 @@ export type PageUncheckedUpdateWithoutParentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.PageUncheckedUpdateManyWithoutParentNestedInput
   pagePermissions?: Prisma.PagePermissionUncheckedUpdateManyWithoutPageNestedInput
+  readerTypeSelections?: Prisma.ReaderTypePageSelectionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateManyWithoutParentInput = {
@@ -1091,11 +1212,13 @@ export type PageUncheckedUpdateManyWithoutParentInput = {
 export type PageCountOutputType = {
   children: number
   pagePermissions: number
+  readerTypeSelections: number
 }
 
 export type PageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | PageCountOutputTypeCountChildrenArgs
   pagePermissions?: boolean | PageCountOutputTypeCountPagePermissionsArgs
+  readerTypeSelections?: boolean | PageCountOutputTypeCountReaderTypeSelectionsArgs
 }
 
 /**
@@ -1122,6 +1245,13 @@ export type PageCountOutputTypeCountPagePermissionsArgs<ExtArgs extends runtime.
   where?: Prisma.PagePermissionWhereInput
 }
 
+/**
+ * PageCountOutputType without action
+ */
+export type PageCountOutputTypeCountReaderTypeSelectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReaderTypePageSelectionWhereInput
+}
+
 
 export type PageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1140,6 +1270,7 @@ export type PageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   parent?: boolean | Prisma.Page$parentArgs<ExtArgs>
   children?: boolean | Prisma.Page$childrenArgs<ExtArgs>
   pagePermissions?: boolean | Prisma.Page$pagePermissionsArgs<ExtArgs>
+  readerTypeSelections?: boolean | Prisma.Page$readerTypeSelectionsArgs<ExtArgs>
   _count?: boolean | Prisma.PageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["page"]>
 
@@ -1198,6 +1329,7 @@ export type PageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   parent?: boolean | Prisma.Page$parentArgs<ExtArgs>
   children?: boolean | Prisma.Page$childrenArgs<ExtArgs>
   pagePermissions?: boolean | Prisma.Page$pagePermissionsArgs<ExtArgs>
+  readerTypeSelections?: boolean | Prisma.Page$readerTypeSelectionsArgs<ExtArgs>
   _count?: boolean | Prisma.PageCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1216,6 +1348,7 @@ export type $PagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     parent: Prisma.$PagePayload<ExtArgs> | null
     children: Prisma.$PagePayload<ExtArgs>[]
     pagePermissions: Prisma.$PagePermissionPayload<ExtArgs>[]
+    readerTypeSelections: Prisma.$ReaderTypePageSelectionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1628,6 +1761,7 @@ export interface Prisma__PageClient<T, Null = never, ExtArgs extends runtime.Typ
   parent<T extends Prisma.Page$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$parentArgs<ExtArgs>>): Prisma.Prisma__PageClient<runtime.Types.Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   children<T extends Prisma.Page$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pagePermissions<T extends Prisma.Page$pagePermissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$pagePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PagePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  readerTypeSelections<T extends Prisma.Page$readerTypeSelectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$readerTypeSelectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReaderTypePageSelectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2134,6 +2268,30 @@ export type Page$pagePermissionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.PagePermissionScalarFieldEnum | Prisma.PagePermissionScalarFieldEnum[]
+}
+
+/**
+ * Page.readerTypeSelections
+ */
+export type Page$readerTypeSelectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReaderTypePageSelection
+   */
+  select?: Prisma.ReaderTypePageSelectionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReaderTypePageSelection
+   */
+  omit?: Prisma.ReaderTypePageSelectionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReaderTypePageSelectionInclude<ExtArgs> | null
+  where?: Prisma.ReaderTypePageSelectionWhereInput
+  orderBy?: Prisma.ReaderTypePageSelectionOrderByWithRelationInput | Prisma.ReaderTypePageSelectionOrderByWithRelationInput[]
+  cursor?: Prisma.ReaderTypePageSelectionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReaderTypePageSelectionScalarFieldEnum | Prisma.ReaderTypePageSelectionScalarFieldEnum[]
 }
 
 /**

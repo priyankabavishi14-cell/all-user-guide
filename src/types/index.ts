@@ -50,3 +50,12 @@ export interface DashboardStats {
   totalPages: number;
   welcomeScreenEnabled: boolean;
 }
+
+export interface ReaderType {
+  id: string;
+  projectId: string;
+  name: string;
+  token: string;
+  pageIds: string[];
+  createdAt: string;
+}

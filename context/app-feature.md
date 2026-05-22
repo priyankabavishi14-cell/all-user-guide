@@ -4,9 +4,18 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Super Admin (Phase 1): centralized project and user access control with dedicated Users Management module
+In Progress — Reader Type (Phase 1): project-specific live site access management with unique publish links and page-level visibility control
 
 ## Goals
+
+### Reader Type
+- New **Reader Type** menu option added to the project-specific left side mega menu
+- Reader Type page: Create Reader Type form with fields — Name, Live Site Menu Design
+- Live Site Menu Design: shows all project pages; user selects/unselects which pages to include
+- Live site menu preview updates dynamically to show only selected pages
+- Every reader type generates a unique publish/live site link
+- Publish link opens only the selected reader type's pages; all other project pages are hidden
+- Selected pages and menu structure are enforced on the live site for that reader type's link
 
 ### Super Admin
 - Super Admin can login using admin credentials and has access to all projects and modules
