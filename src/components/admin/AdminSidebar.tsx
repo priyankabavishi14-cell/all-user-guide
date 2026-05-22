@@ -6,9 +6,10 @@ interface Props {
   project: Project
   allProjects: Project[]
   activePage?: 'dashboard' | 'manage-pages' | 'users'
+  viewerRole?: 'admin' | 'viewer'
 }
 
-export default function AdminSidebar({ project, allProjects, activePage }: Props) {
+export default function AdminSidebar({ project, allProjects, activePage, viewerRole }: Props) {
   return (
     <aside className="w-60 shrink-0 bg-white border-r border-[#e5e7eb] flex flex-col sticky top-[57px] h-[calc(100vh-57px)] overflow-y-auto">
       <div className="p-4 border-b border-[#e5e7eb]">

@@ -96,7 +96,7 @@ export async function loginAction(
       expires,
       path: '/',
     })
-    redirect(`/admin/${projectUser.project.slug}`)
+    redirect('/admin')
   }
 
   return { message: 'Invalid email or password' }

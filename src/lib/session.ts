@@ -14,6 +14,7 @@ export type ViewerAuth = {
   projectUserId: string
   role: 'admin' | 'viewer'
   accessType: 'full' | 'restricted'
+  allowedPageIds: string[]
 }
 
 export type Auth = AdminAuth | ViewerAuth
@@ -82,7 +83,7 @@ export async function resolveAuth(token: string): Promise<Auth | null> {
   const viewerSession = await prisma.viewerSession.findUnique({
     where: { sessionToken: token },
     include: {
-      projectUser: { include: { project: true } },
+      projectUser: { include: { project: true, pagePermissions: true } },
     },
   })
 
@@ -104,6 +105,7 @@ export async function resolveAuth(token: string): Promise<Auth | null> {
       projectUserId: pu.id,
       role: pu.role as 'admin' | 'viewer',
       accessType: pu.accessType as 'full' | 'restricted',
+      allowedPageIds: pu.pagePermissions.map((pp: { pageId: string }) => pp.pageId),
     }
   }
 

@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { resolveAuth } from '@/lib/session'
 import { projects as mockProjects, pages as mockPages } from '@/lib/mock-data'
 import type { Project, Page } from '@/types'
 import CreatePageEditor from './CreatePageEditor'
@@ -20,29 +21,12 @@ export default async function CreateNewPagePage({
   let existingPages: Page[] = []
 
   try {
-    const session = await prisma.session.findUnique({
-      where: { sessionToken: token },
-      include: {
-        user: { include: { projects: true } },
-      },
-    })
+    const auth = await resolveAuth(token)
+    if (!auth) redirect('/admin/login')
 
-    if (!session || session.expires < new Date()) redirect('/admin/login')
-
-    const dbProject = session.user.projects.find((p) => p.slug === slug)
+    const dbProject = auth.allProjects.find((p) => p.slug === slug)
     if (dbProject) {
-      project = {
-        id: dbProject.id,
-        title: dbProject.title,
-        slug: dbProject.slug,
-        description: dbProject.description ?? '',
-        frontendUrl: dbProject.frontendUrl ?? '',
-        backendUrl: dbProject.backendUrl ?? '',
-        isActive: dbProject.isActive,
-        welcomeScreenEnabled: dbProject.welcomeScreenEnabled,
-        createdBy: dbProject.createdBy,
-        createdAt: dbProject.createdAt.toISOString(),
-      }
+      project = dbProject
 
       const dbPages = await prisma.page.findMany({
         where: { projectId: dbProject.id },
