@@ -275,7 +275,7 @@ export default function ProjectsDashboard({
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#374151] hover:bg-[#f9fafb] transition-colors"
                   >
                     <span className="text-base">👥</span>
-                    Users Management
+                    Manage Project Users
                   </Link>
                 </li>
               </ul>

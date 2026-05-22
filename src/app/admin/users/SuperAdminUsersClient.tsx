@@ -251,7 +251,7 @@ export default function SuperAdminUsersClient({
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-[#5b5ce2] bg-[#ede9fe] transition-colors"
                 >
                   <span className="text-base">👥</span>
-                  Users Management
+                  Manage Project Users
                 </Link>
               </li>
             </ul>
@@ -262,7 +262,7 @@ export default function SuperAdminUsersClient({
         <main className="flex-1 p-6 overflow-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-[#111827]">Users Management</h1>
+              <h1 className="text-2xl font-bold text-[#111827]">Manage Project Users</h1>
               <p className="text-[#6b7280] text-sm mt-1">
                 Manage assistant admin users and their project assignments.
               </p>
