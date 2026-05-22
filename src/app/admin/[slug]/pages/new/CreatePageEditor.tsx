@@ -126,6 +126,60 @@ function findTableBlock(lines: string[], lineIdx: number): { start: number; end:
   return { start, end }
 }
 
+// ─── Nested list renderer ────────────────────────────────────────────────────
+
+function processLists(text: string): string {
+  const lines = text.split('\n')
+  const out: string[] = []
+  type Frame = { tag: 'ul' | 'ol'; indent: number }
+  const stack: Frame[] = []
+
+  const closeAll = () => { while (stack.length) out.push(`</${stack.pop()!.tag}>`) }
+  const closeAbove = (n: number) => {
+    while (stack.length && stack[stack.length - 1].indent > n) out.push(`</${stack.pop()!.tag}>`)
+  }
+  const openList = (tag: 'ul' | 'ol', indent: number) => {
+    const isTop = stack.length === 0
+    const cls = tag === 'ul'
+      ? isTop ? 'list-disc pl-5 my-2' : 'list-disc pl-4 mt-1'
+      : isTop ? 'list-decimal pl-5 my-2' : 'list-decimal pl-4 mt-1'
+    out.push(`<${tag} class="${cls}">`)
+    stack.push({ tag, indent })
+  }
+
+  for (const line of lines) {
+    const checkedM  = line.match(/^( *)[-*] \[x\] (.+)$/)
+    const uncheckM  = line.match(/^( *)[-*] \[ \] (.+)$/)
+    const bulletM   = line.match(/^( *)[*-] (?!\[)(.+)$/)
+    const numberedM = line.match(/^( *)\d+\. (.+)$/)
+
+    if (checkedM || uncheckM || bulletM || numberedM) {
+      const m = (checkedM || uncheckM || bulletM || numberedM)!
+      const indent = m[1].length
+      const tag: 'ul' | 'ol' = (numberedM && !checkedM && !uncheckM) ? 'ol' : 'ul'
+      if (stack.length === 0) {
+        openList(tag, indent)
+      } else if (indent > stack[stack.length - 1].indent) {
+        openList(tag, indent)
+      } else if (indent < stack[stack.length - 1].indent) {
+        closeAbove(indent)
+      }
+      if (checkedM) {
+        out.push(`<li class="flex items-center gap-2"><span class="text-[#5b5ce2]">☑</span><span class="line-through text-[#9ca3af]">${checkedM[2]}</span></li>`)
+      } else if (uncheckM) {
+        out.push(`<li class="flex items-center gap-2"><span>☐</span><span>${uncheckM[2]}</span></li>`)
+      } else {
+        out.push(`<li>${(bulletM || numberedM!)[2]}</li>`)
+      }
+    } else {
+      closeAll()
+      out.push(line)
+    }
+  }
+  closeAll()
+  return out.join('\n')
+}
+
 // ─── Markdown renderer ────────────────────────────────────────────────────────
 
 function renderMarkdown(md: string): string {
@@ -172,15 +226,8 @@ function renderMarkdown(md: string): string {
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="max-w-full h-auto my-3 rounded" />')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#5b5ce2] underline">$1</a>')
 
-  // checkbox lists (before plain bullet so `- [ ]` is caught first)
-  html = html
-    .replace(/^[-*] \[x\] (.+)$/gm, '<li class="ml-4 flex items-center gap-2"><span class="text-[#5b5ce2]">☑</span><span class="line-through text-[#9ca3af]">$1</span></li>')
-    .replace(/^[-*] \[ \] (.+)$/gm, '<li class="ml-4 flex items-center gap-2"><span>☐</span><span>$1</span></li>')
-
-  // plain lists
-  html = html
-    .replace(/^[*-] (.+)$/gm,  '<li class="ml-4 list-disc">$1</li>')
-    .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
+  // nested lists
+  html = processLists(html)
 
   // tables
   {
@@ -221,7 +268,7 @@ function renderMarkdown(md: string): string {
     .map((block) => {
       const t = block.trim()
       if (!t) return ''
-      if (/^<[h1-6bpldq]/.test(t)) return t
+      if (/^<[h1-6bpldquo]/.test(t)) return t
       return `<p class="mb-3">${t.replace(/\n/g, '<br/>')}</p>`
     })
     .join('\n')
@@ -250,55 +297,54 @@ export default function CreatePageEditor({ project, existingPages, availableIcon
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [inTable, setInTable] = useState(false)
 
+  const [draftLabel, setDraftLabel] = useState('')
+
   const toastTimer      = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const autosaveTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const autosaveHideRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const editorRef       = useRef<HTMLTextAreaElement>(null)
   const imageInputRef   = useRef<HTMLInputElement>(null)
+  const autosaveTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const draftLabelTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [isUploading, setIsUploading] = useState(false)
+
+  const draftKey = `page-draft:new:${project.slug}`
 
   const initialState: CreatePageState = {}
   const boundAction = createPageAction.bind(null, project.id, project.slug)
   const [state, formAction, isPending] = useActionState(boundAction, initialState)
 
-  // Restore draft from localStorage on mount
+  // Restore draft on mount
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(AUTOSAVE_KEY(project.id))
-      if (raw) {
-        const draft = JSON.parse(raw) as { title?: string; content?: string }
-        if (draft.title) setTitle(draft.title)
-        if (draft.content) setContent(draft.content)
-      }
-    } catch {
-      // ignore corrupt storage
-    }
-  }, [project.id])
+      const raw = localStorage.getItem(draftKey)
+      if (!raw) return
+      const draft = JSON.parse(raw) as { title?: string; icon?: string; content?: string }
+      if (draft.title)            setTitle(draft.title)
+      if (draft.icon !== undefined) setIcon(draft.icon)
+      if (draft.content)          setContent(draft.content)
+      setDraftLabel('Draft restored')
+      draftLabelTimer.current = setTimeout(() => setDraftLabel(''), 2500)
+    } catch {}
+  }, [])
 
-  // Debounced localStorage autosave whenever title or content changes
+  // Autosave debounced 1.5s after any change
   useEffect(() => {
     if (!title && !content) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
       try {
-        localStorage.setItem(AUTOSAVE_KEY(project.id), JSON.stringify({ title, content }))
-        setAutosaveStatus('saved')
-        if (autosaveHideRef.current) clearTimeout(autosaveHideRef.current)
-        autosaveHideRef.current = setTimeout(() => setAutosaveStatus('idle'), 2500)
-      } catch {
-        // storage quota exceeded or unavailable — silently skip
-      }
-    }, AUTOSAVE_DELAY)
-    return () => {
-      if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
-    }
-  }, [title, content, project.id])
+        localStorage.setItem(draftKey, JSON.stringify({ title, icon, content }))
+        setDraftLabel('Draft saved')
+        if (draftLabelTimer.current) clearTimeout(draftLabelTimer.current)
+        draftLabelTimer.current = setTimeout(() => setDraftLabel(''), 2000)
+      } catch {}
+    }, 1500)
+    return () => { if (autosaveTimer.current) clearTimeout(autosaveTimer.current) }
+  }, [title, icon, content])
 
   useEffect(() => {
     if (state.success) {
-      // Clear draft on successful save
-      try { localStorage.removeItem(AUTOSAVE_KEY(project.id)) } catch { /* ignore */ }
+      try { localStorage.removeItem(draftKey) } catch {}
       showToast('success', 'Page created successfully!')
       const t = setTimeout(() => router.push(`/admin/${project.slug}/pages`), 1200)
       return () => clearTimeout(t)
@@ -695,6 +741,10 @@ export default function CreatePageEditor({ project, existingPages, availableIcon
           </span>
 
           <div className="flex-1" />
+
+          {draftLabel && (
+            <span className="text-xs text-[#9ca3af] hidden sm:inline">{draftLabel}</span>
+          )}
 
           {/* View mode */}
           <div className="flex bg-[#f3f4f6] rounded-lg p-0.5 text-xs font-medium">

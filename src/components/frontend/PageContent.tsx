@@ -1,5 +1,5 @@
 import { renderMarkdown } from '@/lib/render-markdown'
-import { isSvgIcon } from '@/lib/icon-utils'
+import PageIcon from '@/components/PageIcon'
 import type { Page } from '@/types'
 
 interface Props {
@@ -13,11 +13,7 @@ export default function PageContent({ page }: Props) {
     <div className="max-w-3xl mx-auto px-6 py-10">
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
-          {page.icon && (
-            isSvgIcon(page.icon)
-              ? <img src={`/icons/${page.icon}.svg`} alt={page.icon} className="w-8 h-8 shrink-0" />
-              : <span className="text-2xl">{page.icon}</span>
-          )}
+          {page.icon && <PageIcon value={page.icon} className="w-8 h-8 shrink-0" />}
           <h1 className="text-3xl font-bold text-[#111827]">{page.title}</h1>
         </div>
         {page.description && (
