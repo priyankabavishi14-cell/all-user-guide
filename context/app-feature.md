@@ -268,6 +268,16 @@ Completed â€” Markdown Editor Insert Table feature implemented (toolbar button â
 - Behavior rules: no duplicate image syntax, maintain cursor position after insertion, support undo/redo, allow manual editing of markdown syntax
 - Responsive: images resize on all devices; preview panel adapts accordingly
 
+### Markdown Editor Autosave
+- Applies to: Add Page and Edit Page in Manage Pages module
+- Content autosaves automatically in the background while the user types or edits; no manual save required for every change
+- Autosave triggers after content changes; saves the latest markdown editor content along with page title and related page fields if updated
+- User can continue writing without interruption; no page refresh required
+- Existing editor behavior, design, and UI remain unchanged
+- Validation: latest content always saved correctly; no duplicate content creation; no data loss during editing
+- After refresh or reopening the page, user always sees the latest saved content
+- Autosave applies to both Add Page and Edit Page flows
+
 ### Manage Users
 - Entry: left sidebar "Manage Users" link; opens Manage Users page in the main content area
 - Layout: same shell as other admin pages; "Manage Users" sidebar item highlighted when active
@@ -338,6 +348,40 @@ Completed â€” Markdown Editor Insert Table feature implemented (toolbar button â
 - Fix: project-specific users should log in using their created email and password
 - User sees only the assigned project on login
 - Access permissions apply based on assigned role and access type
+
+### Project Specific Users â€” Phase 1
+
+#### 1. User Listing Refresh Issue Fix
+- Newly created user should display immediately in the users listing without manual page refresh
+- Real-time listing update after: Create user, Update user, Delete user
+- Proper success message displayed immediately after each operation
+
+#### 2. Project Specific User Login
+- Created project-specific users (Admin User / Normal User) should login successfully using their email and password
+- Authentication must work properly for both Admin User and Normal User roles
+- Invalid login issue resolved
+
+#### 3. User Login Default Flow
+- After successful login, first page opens is "Project Management" page
+- Only the assigned project is shown; other projects are not displayed
+- Assigned permissions apply correctly from the first load
+
+#### 4. Project Access Permission Flow
+- User can open their assigned project; existing project flow remains unchanged
+- Modules and pages display according to assigned permissions only
+- Restricted modules are hidden; restricted pages cannot be accessed directly via URL
+- Allowed permissions example: Dashboard, Manage Pages, Manage Users, View Pages, Edit Pages
+
+#### Access Rules
+- Admin User: access only assigned project; full project access based on assigned permissions; can manage allowed modules
+- Normal User: access only assigned project; restricted module access; only allowed permissions visible
+
+#### Notes
+- Existing project design and layout unchanged; only functionality changes
+- Unauthorized modules/pages must not display at UI or API level
+- User access fully determined by assigned role and permissions
+
+---
 
 ### Markdown Editor Headings Toolbar
 - Horizontal toolbar at the top of the markdown editor with H1 | H2 | H3 | H4 | H5 buttons
