@@ -6,11 +6,13 @@ import Link from 'next/link'
 import type { Project, Page } from '@/types'
 import { updatePageAction, type UpdatePageState } from './actions'
 import IconPicker from '@/components/admin/IconPicker'
+import { renderMarkdown } from '@/lib/render-markdown'
 
 interface Props {
   project: Project
   page: Page
   existingPages: Page[]
+  availableIcons: string[]
 }
 
 type ViewMode = 'editor' | 'preview' | 'split'
@@ -83,11 +85,12 @@ const LIST_OPTIONS: { type: ListType; label: string; icon: string }[] = [
   { type: 'checkbox', label: 'Checkbox List',  icon: '☐' },
 ]
 
+// Strip list marker from a line while preserving leading indentation
 function stripListPrefix(line: string): string {
   return line
-    .replace(/^(\d+\.\s+)/, '')
-    .replace(/^[-*]\s+\[[ x]\]\s+/, '')
-    .replace(/^[-*]\s+/, '')
+    .replace(/^(\s*)\d+\.\s+/, '$1')
+    .replace(/^(\s*)[-*]\s+\[[ x]\]\s+/, '$1')
+    .replace(/^(\s*)[-*]\s+/, '$1')
 }
 
 function buildListPrefix(type: ListType, idx: number): string {
@@ -283,7 +286,7 @@ function renderMarkdown(md: string): string {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function EditPageEditor({ project, page, existingPages }: Props) {
+export default function EditPageEditor({ project, page, existingPages, availableIcons }: Props) {
   const router = useRouter()
   const [viewMode, setViewMode]         = useState<ViewMode>('split')
   const [title, setTitle]               = useState(page.title)
@@ -312,6 +315,10 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
   const initialState: UpdatePageState = {}
   const boundAction = updatePageAction.bind(null, page.id, project.id, project.slug)
   const [state, formAction, isPending] = useActionState(boundAction, initialState)
+
+  // Track the initial values to skip autosave on first render
+  const initialTitle   = useRef(page.title)
+  const initialContent = useRef(page.content)
 
   // Auto-update slug from title (only when slug hasn't been manually edited)
   useEffect(() => {
@@ -413,10 +420,11 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
 
     let lineIdx = 0
     const newLines = lines.map((line) => {
-      const bare   = stripListPrefix(line)
-      const prefix = buildListPrefix(type, lineIdx)
-      lineIdx++
-      return prefix + bare
+      const stripped = stripListPrefix(line)
+      const indent   = stripped.match(/^(\s*)/)?.[1] ?? ''
+      const bare     = stripped.slice(indent.length)
+      const prefix   = buildListPrefix(type, lineIdx++)
+      return indent + prefix + bare
     })
 
     const newBlock   = newLines.join('\n')
@@ -429,6 +437,81 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
       el.focus()
       el.setSelectionRange(newCursor, newCursor)
     })
+  }
+
+  // Tab = indent list item by 2 spaces; Shift+Tab = dedent; Enter = continue list
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    const el = editorRef.current
+    if (!el) return
+    const { selectionStart, selectionEnd } = el
+
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      const lineStart = getLineStart(content, selectionStart)
+      const lineEnd   = getLineEnd(content, selectionEnd)
+      const block     = content.slice(lineStart, lineEnd)
+      const lines     = block.split('\n')
+
+      const newLines = lines.map(line => {
+        if (e.shiftKey) {
+          return line.startsWith('  ') ? line.slice(2) : line
+        }
+        return '  ' + line
+      })
+      const newBlock   = newLines.join('\n')
+      const delta      = newBlock.length - block.length
+      const newContent = content.slice(0, lineStart) + newBlock + content.slice(lineEnd)
+      setContent(newContent)
+      requestAnimationFrame(() => {
+        el.focus()
+        const newStart = Math.max(lineStart, selectionStart + (e.shiftKey ? -2 : 2))
+        el.setSelectionRange(newStart, Math.max(newStart, selectionEnd + delta))
+      })
+      return
+    }
+
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const lineStart   = getLineStart(content, selectionStart)
+      const lineEnd     = getLineEnd(content, selectionStart)
+      const currentLine = content.slice(lineStart, lineEnd)
+
+      const bulletMatch   = currentLine.match(/^(\s*)[*\-] (?!\[[ x]\])/)
+      const numberedMatch = currentLine.match(/^(\s*)(\d+)\. /)
+
+      if (bulletMatch || numberedMatch) {
+        const markerEnd   = bulletMatch ? bulletMatch[0].length : numberedMatch![0].length
+        const lineContent = currentLine.slice(markerEnd)
+
+        if (!lineContent.trim()) {
+          // Empty list item — exit the list
+          e.preventDefault()
+          const newContent = content.slice(0, lineStart) + content.slice(lineEnd)
+          setContent(newContent)
+          requestAnimationFrame(() => {
+            el.focus()
+            el.setSelectionRange(lineStart, lineStart)
+          })
+        } else if (selectionEnd === lineEnd) {
+          // Cursor at end of non-empty list line — continue the list
+          e.preventDefault()
+          let newPrefix: string
+          if (bulletMatch) {
+            const marker = currentLine[bulletMatch[1].length]
+            newPrefix = bulletMatch[1] + marker + ' '
+          } else {
+            newPrefix = numberedMatch![1] + (parseInt(numberedMatch![2]) + 1) + '. '
+          }
+          const insertion  = '\n' + newPrefix
+          const newContent = content.slice(0, selectionEnd) + insertion + content.slice(selectionEnd)
+          setContent(newContent)
+          const newCursor = selectionEnd + insertion.length
+          requestAnimationFrame(() => {
+            el.focus()
+            el.setSelectionRange(newCursor, newCursor)
+          })
+        }
+      }
+    }
   }
 
   function syncToolbarState() {
@@ -690,6 +773,13 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
             ))}
           </div>
 
+          {autosaveStatus === 'saving' && (
+            <span className="text-xs text-[#6b7280]">Saving…</span>
+          )}
+          {autosaveStatus === 'saved' && (
+            <span className="text-xs text-[#6b7280]">Saved</span>
+          )}
+
           <Link
             href={`/admin/${project.slug}/pages`}
             className="ml-2 px-4 py-2 text-sm font-medium text-[#374151] border border-[#e5e7eb] rounded-lg hover:bg-[#f9fafb] transition-colors"
@@ -945,7 +1035,7 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
           {/* Icon */}
           <div>
             <label className="block text-xs font-semibold text-[#374151] mb-1">Icon</label>
-            <IconPicker value={icon} onChange={setIcon} />
+            <IconPicker value={icon} onChange={setIcon} icons={availableIcons} />
           </div>
 
           <div className="bg-[#f0f0ff] border border-[#c7c7f5] rounded-lg p-3 text-xs text-[#5b5ce2] leading-relaxed">
@@ -974,6 +1064,7 @@ export default function EditPageEditor({ project, page, existingPages }: Props) 
                 ref={editorRef}
                 value={content}
                 onChange={(e) => { setContent(e.target.value); syncToolbarState() }}
+                onKeyDown={handleKeyDown}
                 onKeyUp={syncToolbarState}
                 onClick={syncToolbarState}
                 placeholder="# Start writing your awesome guide content here..."
