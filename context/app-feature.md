@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress
+Completed — Manage Users implemented (Super Admin/Admin User/Normal User roles, user listing with search, add/edit/delete modals, project-scoped access, page-level permissions)
 
 ## Goals
 
@@ -122,6 +122,84 @@ In Progress
 - Behavior rules: prevent deletion of parent without handling children; unique page slug enforced; sequence order integrity preserved
 - Responsive: sidebar collapses on smaller screens; table scrollable horizontally; actions accessible via dropdown on mobile
 
+### Small Changes — Phase 2 (Super Admin & Manage All Projects)
+
+#### Super Admin
+
+1. **Full Project Access**
+   - Super Admin can access all projects
+   - Super Admin can access all modules inside any project
+
+2. **Full Permission Access**
+   - All permissions automatically enabled for Super Admin
+   - No permission restrictions applied
+
+3. **Project Module Access**
+   - When Super Admin opens any project, accessible modules: Dashboard, Manage Pages, Manage Users
+
+#### Manage All Projects Page Changes
+
+4. **Existing Projects**
+   - Projects displayed in table format with improved listing visibility
+
+5. **Create Project Button**
+   - Moved to left side corner, visible above the projects table
+
+6. **Create New Project Popup**
+   - Opens when user clicks "Create New Project"
+   - Fields: Project Title, Slug, Description
+   - Removed fields: Frontend URL, Backend URL
+
+7. **Search Filter**
+   - Search filter above project table; filters by matching project name/title
+
+8. **Left Side Menu Changes**
+   - Show only: Switch Project list, Manage All Projects button
+   - Remove: Management section, Content section
+
+---
+
+### Small Changes — Phase 1 (UI/UX Improvements)
+
+#### Admin Panel
+
+1. **Static Header (Sticky Header)**
+   - Top header section remains fixed while scrolling
+   - Applies to: page title section, markdown editor toolbar/options
+   - Expected: header always visible; Save button and formatting tools (H1–H5, Bold, Lists, Insert Link, Upload Image) accessible without scrolling up
+
+2. **Static Left Sidebar Menu**
+   - Left navigation menu remains fixed while main content scrolls
+   - Applies to: Dashboard, Manage Pages, Create/Edit Page, User & Permission Management, all admin pages
+   - Expected: sidebar always visible; navigation accessible during long page scrolling
+
+3. **Existing Projects — Highlight Change**
+   - Current: "Edit" button is highlighted (primary emphasis)
+   - Updated: "View" button highlighted instead; "Edit" de-emphasised
+   - Applies to: Manage All Projects → Existing Projects listing
+
+#### View Live Site
+
+4. **Static Left Sidebar Menu**
+   - Documentation navigation sidebar remains fixed while content scrolls
+   - Applies to: documentation live view, welcome screen, content pages
+   - Expected: sidebar always accessible; users can switch pages without scrolling back up
+
+#### Layout Behaviour Summary
+
+| Section (Admin) | Behaviour |
+|---|---|
+| Header | Fixed / Sticky |
+| Left Sidebar | Fixed |
+| Main Content | Scrollable |
+
+| Section (Live Site) | Behaviour |
+|---|---|
+| Left Sidebar | Fixed |
+| Content Area | Scrollable |
+
+---
+
 ### Manage Pages — Small Changes
 - Hierarchy View is active by default every time Manage Pages loads; does not persist last selected view
 - Create New Page: after clicking Save Changes, redirect to Manage Pages (not Project Dashboard)
@@ -180,16 +258,50 @@ In Progress
 - Behavior rules: no duplicate image syntax, maintain cursor position after insertion, support undo/redo, allow manual editing of markdown syntax
 - Responsive: images resize on all devices; preview panel adapts accordingly
 
-### User & Permission Management
-- Three roles: Admin (full access), Editor (create/edit pages, limited permission control), Viewer (view assigned pages only)
-- User management: Add (Name, Email, Role), Edit (role + assigned pages), Delete (confirmation required)
-- Permission types: Full Access (all pages in project) or Restricted Access (selected pages only)
-- Page-level permissions: multi-select tree with hierarchy view; selecting a parent optionally auto-includes child pages
-- Admin UI: user form with role selector and permission type toggle (Full / Custom); page selector is a checkbox tree matching the page hierarchy
-- Live site access control: sidebar shows only permitted pages; restricted pages hidden completely; direct URL access to restricted page shows "Access Denied" or redirects
-- Behavior rules: Admin always has full access; at least one access type required; permission changes reflect immediately; if assigned page is deleted, remove from user permissions automatically
-- Security: permission enforced at both frontend (UI visibility) and backend (API validation); prevent unauthorized API access
-- Responsive: permission checkbox tree works on desktop and tablet; scrollable for large page lists
+### Manage Users
+- Entry: left sidebar "Manage Users" link; opens Manage Users page in the main content area
+- Layout: same shell as other admin pages; "Manage Users" sidebar item highlighted when active
+- Existing project design and layout remain the same; only Manage Users menu item highlights
+
+#### User Listing
+- Table format: Name, Email, Role, Access Type, Assigned Project, Actions (View / Edit / Delete)
+- Search filter above table; filters by name or email
+
+#### Add New User
+- "Add User" button opens Add New User popup
+- Fields: Name, Email, Password, Confirm Password
+- Role Selection: Admin User (project-scoped full/restricted access), Normal User (restricted module access)
+- Access Type:
+  - Full Access — project-specific full access; user can access all allowed modules for the selected project
+  - Restricted Access — shows pages/modules list; admin selects allowed modules/pages
+- Project Selection: assign a specific project to the user; user login shows only the assigned project
+
+#### Edit User
+- Update name, email, role, access type, assigned project, and allowed modules
+
+#### Delete User
+- Confirmation popup before deletion; user removed on confirm
+
+#### Project-Specific Admin User Login
+- Project Management page shows only the assigned project
+- Can access: Dashboard, Manage Pages, Manage Users, other allowed modules
+- Created pages and users are scoped to the assigned project
+- Access based on assigned permissions
+
+#### Project-Specific Normal User Login
+- Project Management page shows only the assigned project
+- Module access limited to assigned permissions (e.g. Manage Pages — view/edit; Manage Users — view/edit)
+- Restricted modules hidden from menu
+
+#### Permission Rules
+- Super Admin: full access to all projects and all modules; can create and manage all users
+- Admin User: access only assigned project; access based on assigned permissions
+- Normal User: access only assigned project; restricted module access based on permissions
+
+#### Behavior Rules
+- Permission changes reflect immediately
+- If an assigned page is deleted, remove it from user permissions automatically
+- Security enforced at both frontend (UI visibility) and backend (API validation)
 
 ### Markdown Editor Headings Toolbar
 - Horizontal toolbar at the top of the markdown editor with H1 | H2 | H3 | H4 | H5 buttons
@@ -220,6 +332,45 @@ In Progress
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-13 — Implemented Manage Users
+- Created `src/app/admin/[slug]/users/UsersClient.tsx` (Client Component: full rewrite — search bar filtering by name/email, table with Name/Email/Role/Access Type/Assigned Project/Actions columns, View/Edit/Delete actions per row)
+- View action opens read-only user detail modal showing role badge, access type, assigned project, and allowed pages list
+- Add/Edit action opens centered popup modal with fields: Name, Email, Password, Confirm Password, Role (Admin User / Normal User), Access Type (Full / Restricted), page permission tree for restricted access, Assigned Project (read-only current project)
+- Delete action shows confirmation modal; user removed on confirm
+- Updated `src/app/admin/[slug]/users/page.tsx`: role cast updated from `'editor'` to `'admin'`
+- Updated `src/types/index.ts`: `ProjectUser.role` changed from `'editor' | 'viewer'` to `'admin' | 'viewer'`
+- Role labels: `'admin'` → "Admin User" (blue badge), `'viewer'` → "Normal User" (grey badge)
+- Existing `src/app/admin/[slug]/users/actions.ts` retained: `createProjectUserAction`, `updateProjectUserAction`, `deleteProjectUserAction` with scrypt password hashing and `PagePermission` sync for restricted access
+- Route: `/admin/[slug]/users`
+
+### 2026-05-13 — Added Manage Users Spec
+- Defined Manage Users spec (`context/features/manage-users-spec.md`)
+- Roles: Super Admin (unrestricted), Admin User (project-scoped), Normal User (permission-restricted)
+- Manage Users listing: table with Name, Email, Role, Access Type, Assigned Project, Actions
+- Add New User popup: Name, Email, Password, Confirm Password, Role, Access Type (Full / Restricted), Project assignment
+- Edit User: update all fields including role, permissions, assigned project
+- Delete User: confirmation popup required before removal
+- Project-Specific Admin User login: sees only assigned project; access to Dashboard, Manage Pages, Manage Users per permissions
+- Project-Specific Normal User login: sees only assigned project; limited module access (view/edit per module); restricted modules hidden
+- Permission rules: Super Admin full access; Admin User and Normal User scoped to assigned project and permissions
+- Security enforced at both UI and API levels; deleted pages auto-removed from user permissions
+
+### 2026-05-13 — Added Small Changes Phase 2 Spec
+- Defined Small Changes Phase 2 spec (`context/features/small-changes-02-spec.md`)
+- Super Admin: full access to all projects and modules; all permissions enabled by default
+- Super Admin project modules: Dashboard, Manage Pages, Manage Users
+- Manage All Projects: projects shown in table format; Create Project button moved to top-left
+- Create New Project popup: fields reduced to Title, Slug, Description (Frontend URL and Backend URL removed)
+- Added search filter above project table for filtering by project name/title
+- Left side menu simplified: shows only Switch Project list and Manage All Projects button; Management and Content sections removed
+
+### 2026-05-12 — Added Small Changes Phase 1 Spec
+- Defined Small Changes Phase 1 UI/UX improvements (`context/features/small-changes-01-spec.md`)
+- Admin Panel: sticky top header (page title + markdown toolbar always visible on scroll)
+- Admin Panel: fixed left sidebar on all admin screens (Dashboard, Manage Pages, Create/Edit Page, User Management)
+- Admin Panel: Existing Projects listing — "View" button now primary highlighted action instead of "Edit"
+- Live Site: fixed left documentation sidebar; only main content area scrolls
 
 ### 2026-05-05 — Added Icon Picker to Small Changes Spec
 - Added Icon Picker requirement to `context/features/small-changes.md`

@@ -10,13 +10,14 @@ datasource db {
 // ─── Core Models ─────────────────────────────────────────────────────────────
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  phone     String?
-  password  String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  projects  Project[]
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  phone         String?
+  password      String?
+  isSuperAdmin  Boolean   @default(false) @map("is_super_admin")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  projects      Project[]
 
   // NextAuth relations
   accounts Account[]

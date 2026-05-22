@@ -3,6 +3,7 @@ export const currentUser = {
   name: "Priyanka Bavishi",
   email: "priyanka.bavishi14@gmail.com",
   phone: "+1234567890",
+  isSuperAdmin: false,
   createdAt: "2026-01-15T10:00:00Z",
 };
 

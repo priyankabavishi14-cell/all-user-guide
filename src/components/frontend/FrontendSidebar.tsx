@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Page } from '@/types'
-import { isSvgIcon } from '@/components/admin/IconPicker'
+import { isSvgIcon } from '@/lib/icon-utils'
 
 interface Props {
   projectSlug: string

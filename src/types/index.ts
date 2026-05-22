@@ -31,6 +31,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
+  isSuperAdmin: boolean;
   createdAt: string;
 }
 
@@ -39,7 +40,7 @@ export interface ProjectUser {
   projectId: string;
   name: string;
   email: string;
-  role: 'editor' | 'viewer';
+  role: 'admin' | 'viewer';
   accessType: 'full' | 'restricted';
   createdAt: string;
   allowedPageIds: string[];
