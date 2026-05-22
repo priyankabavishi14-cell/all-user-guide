@@ -193,6 +193,7 @@ export const ReaderTypeScalarFieldEnum = {
   projectId: 'projectId',
   name: 'name',
   token: 'token',
+  readerSlug: 'readerSlug',
   createdAt: 'createdAt'
 } as const
 
