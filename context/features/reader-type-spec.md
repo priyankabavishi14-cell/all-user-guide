@@ -52,6 +52,14 @@ This update adds a new "Reader Type" module for project specific live site acces
 
 ### Reader Type Publish Link
 
+#### Custom Live Site Link
+
+* Optional field in Create / Edit Reader Type form: **Custom Live Site Link**
+* If user enters a custom URL, clicking **Open** opens that custom URL
+* If no custom URL is provided, clicking **Open** opens the auto-generated live site link (`/{slug}/r/{token}`)
+* Copy Link also copies the custom URL when one is set; otherwise copies the auto-generated link
+* Custom URL stored per reader type; editable at any time
+
 #### Unique Publish Link
 
 * Every reader type should generate unique publish/live site link

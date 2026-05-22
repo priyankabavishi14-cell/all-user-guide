@@ -10,14 +10,15 @@ interface Props {
   pages: Page[]
   activePageSlug?: string
   readerTypeToken?: string
+  readerTypeSlug?: string
   onNavigate?: () => void
 }
 
-export default function FrontendSidebar({ projectSlug, pages, activePageSlug, readerTypeToken, onNavigate }: Props) {
+export default function FrontendSidebar({ projectSlug, pages, activePageSlug, readerTypeToken, readerTypeSlug, onNavigate }: Props) {
   function pageHref(pageSlug: string) {
-    return readerTypeToken
-      ? `/${projectSlug}/r/${readerTypeToken}/pages/${pageSlug}`
-      : `/${projectSlug}/pages/${pageSlug}`
+    if (readerTypeSlug) return `/${projectSlug}/${readerTypeSlug}/pages/${pageSlug}`
+    if (readerTypeToken) return `/${projectSlug}/r/${readerTypeToken}/pages/${pageSlug}`
+    return `/${projectSlug}/pages/${pageSlug}`
   }
   const rootPages = pages.filter((p) => p.parentId === null)
   const childMap = pages.reduce<Record<string, Page[]>>((acc, page) => {

@@ -34,17 +34,10 @@ export default async function ReaderTypesPage({
     if (dbProject) {
       project = dbProject
 
-      const [dbPages, dbReaderTypes] = await Promise.all([
-        prisma.page.findMany({
-          where: { projectId: dbProject.id, isActive: true },
-          orderBy: [{ sequence: 'asc' }, { title: 'asc' }],
-        }),
-        prisma.readerType.findMany({
-          where: { projectId: dbProject.id },
-          include: { pageSelections: true },
-          orderBy: { createdAt: 'desc' },
-        }),
-      ])
+      const dbPages = await prisma.page.findMany({
+        where: { projectId: dbProject.id, isActive: true },
+        orderBy: [{ sequence: 'asc' }, { title: 'asc' }],
+      })
 
       pages = dbPages.map((p) => ({
         id: p.id,
@@ -61,14 +54,24 @@ export default async function ReaderTypesPage({
         updatedAt: p.updatedAt.toISOString(),
       }))
 
-      readerTypes = dbReaderTypes.map((rt) => ({
-        id: rt.id,
-        projectId: rt.projectId,
-        name: rt.name,
-        token: rt.token,
-        pageIds: rt.pageSelections.map((s) => s.pageId),
-        createdAt: rt.createdAt.toISOString(),
-      }))
+      try {
+        const dbReaderTypes = await prisma.readerType.findMany({
+          where: { projectId: dbProject.id },
+          include: { pageSelections: true },
+          orderBy: { createdAt: 'desc' },
+        })
+        readerTypes = dbReaderTypes.map((rt) => ({
+          id: rt.id,
+          projectId: rt.projectId,
+          name: rt.name,
+          token: rt.token,
+          readerSlug: rt.readerSlug ?? '',
+          pageIds: rt.pageSelections.map((s) => s.pageId),
+          createdAt: rt.createdAt.toISOString(),
+        }))
+      } catch {
+        readerTypes = []
+      }
     }
   } catch {
     // DB unavailable — fall back to mock

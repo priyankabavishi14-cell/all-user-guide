@@ -21,6 +21,29 @@ async function verifyProjectAccess(slug: string): Promise<string | null> {
   }
 }
 
+function nameToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
+async function uniqueReaderSlug(projectId: string, base: string, excludeId?: string): Promise<string> {
+  let slug = base || 'reader'
+  let attempt = 0
+  while (true) {
+    const existing = await prisma.readerType.findFirst({
+      where: { projectId, readerSlug: slug, ...(excludeId ? { NOT: { id: excludeId } } : {}) },
+      select: { id: true },
+    })
+    if (!existing) return slug
+    attempt++
+    slug = `${base}-${attempt}`
+  }
+}
+
 export async function createReaderTypeAction(
   projectSlug: string,
   formData: FormData
@@ -34,19 +57,22 @@ export async function createReaderTypeAction(
   if (!name) return { error: 'Name is required' }
 
   try {
+    const readerSlug = await uniqueReaderSlug(projectId, nameToSlug(name))
+
     const readerType = await prisma.readerType.create({
-      data: { projectId, name },
+      data: { projectId, name, readerSlug },
     })
 
-    if (pageIds.length > 0) {
-      await prisma.readerTypePageSelection.createMany({
-        data: pageIds.map((pageId) => ({ readerTypeId: readerType.id, pageId })),
+    for (const pageId of pageIds) {
+      await prisma.readerTypePageSelection.create({
+        data: { readerTypeId: readerType.id, pageId },
       })
     }
 
     revalidatePath(`/admin/${projectSlug}/reader-types`)
     return { success: true }
-  } catch {
+  } catch (err) {
+    console.error('[createReaderTypeAction]', err)
     return { error: 'Failed to create reader type' }
   }
 }
@@ -65,22 +91,25 @@ export async function updateReaderTypeAction(
   if (!name) return { error: 'Name is required' }
 
   try {
+    const readerSlug = await uniqueReaderSlug(projectId, nameToSlug(name), readerTypeId)
+
     await prisma.readerType.update({
       where: { id: readerTypeId },
-      data: { name },
+      data: { name, readerSlug },
     })
 
     await prisma.readerTypePageSelection.deleteMany({ where: { readerTypeId } })
 
-    if (pageIds.length > 0) {
-      await prisma.readerTypePageSelection.createMany({
-        data: pageIds.map((pageId) => ({ readerTypeId, pageId })),
+    for (const pageId of pageIds) {
+      await prisma.readerTypePageSelection.create({
+        data: { readerTypeId, pageId },
       })
     }
 
     revalidatePath(`/admin/${projectSlug}/reader-types`)
     return { success: true }
-  } catch {
+  } catch (err) {
+    console.error('[updateReaderTypeAction]', err)
     return { error: 'Failed to update reader type' }
   }
 }

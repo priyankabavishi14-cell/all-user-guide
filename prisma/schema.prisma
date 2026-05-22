@@ -153,15 +153,17 @@ model ViewerSession {
 // ─── Reader Type Models ───────────────────────────────────────────────────────
 
 model ReaderType {
-  id         String   @id @default(uuid())
-  projectId  String   @map("project_id")
-  name       String
-  token      String   @unique @default(uuid())
-  createdAt  DateTime @default(now()) @map("created_at")
+  id          String   @id @default(uuid())
+  projectId   String   @map("project_id")
+  name        String
+  token       String   @unique @default(uuid())
+  readerSlug  String?  @map("reader_slug")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   project        Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   pageSelections ReaderTypePageSelection[]
 
+  @@unique([projectId, readerSlug])
   @@index([projectId])
   @@map("reader_types")
 }

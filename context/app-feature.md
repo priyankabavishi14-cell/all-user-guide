@@ -4,7 +4,7 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-In Progress — Reader Type (Phase 1): project-specific live site access management with unique publish links and page-level visibility control
+Completed — Reader Type (Phase 1): project-specific live site access management with unique publish links and page-level visibility control
 
 ## Goals
 
@@ -451,6 +451,19 @@ In Progress — Reader Type (Phase 1): project-specific live site access managem
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-22 — Implemented Reader Type
+- Added `ReaderType` and `ReaderTypePageSelection` models to `prisma/schema.prisma`; applied migration `20260522105604_add_reader_types`
+- Added `ReaderType` interface to `src/types/index.ts` with `id`, `projectId`, `name`, `token`, `pageIds`, `createdAt`
+- Created `src/app/admin/[slug]/reader-types/actions.ts`: `createReaderTypeAction`, `updateReaderTypeAction`, `deleteReaderTypeAction` with project auth guard
+- Created `src/app/admin/[slug]/reader-types/page.tsx` (Server Component: fetches pages + reader types with page selections)
+- Created `src/app/admin/[slug]/reader-types/ReaderTypeClient.tsx` (Client Component: card listing with name, page badges, publish link; Create/Edit modal with recursive `PageCheckboxTree` + live `SidebarPreview`)
+- Created `src/app/[slug]/r/[token]/page.tsx` (public reader type landing: token lookup, active page filtering, welcome screen or redirect to first page)
+- Created `src/app/[slug]/r/[token]/pages/[pageSlug]/page.tsx` (public reader type page view: shows only reader type's selected pages)
+- Updated `src/components/admin/AdminSidebar.tsx`: added `'reader-types'` to `activePage` union; added Reader Type nav link
+- Updated `src/components/frontend/FrontendShell.tsx` and `FrontendSidebar.tsx`: added `readerTypeToken` prop; sidebar links route to `/{slug}/r/{token}/pages/{pageSlug}` when token is present
+- Routes: `/admin/[slug]/reader-types` (admin), `/{slug}/r/{token}` (public landing), `/{slug}/r/{token}/pages/{pageSlug}` (public page view)
+- Build verified: `npx tsc --noEmit` passes with no TypeScript errors
 
 ### 2026-05-21 — Implemented Markdown Editor Dynamic Icons
 - Updated `src/components/admin/IconPicker.tsx`: added search input at top of dropdown with magnifier icon; auto-focuses on open via `requestAnimationFrame`; clears query on every open

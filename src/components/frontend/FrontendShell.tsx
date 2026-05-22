@@ -10,10 +10,11 @@ interface Props {
   activePageSlug?: string
   viewer?: { name: string }
   readerTypeToken?: string
+  readerTypeSlug?: string
   children: React.ReactNode
 }
 
-export default function FrontendShell({ project, pages, activePageSlug, viewer, readerTypeToken, children }: Props) {
+export default function FrontendShell({ project, pages, activePageSlug, viewer, readerTypeToken, readerTypeSlug, children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -70,6 +71,7 @@ export default function FrontendShell({ project, pages, activePageSlug, viewer, 
             pages={pages}
             activePageSlug={activePageSlug}
             readerTypeToken={readerTypeToken}
+            readerTypeSlug={readerTypeSlug}
             onNavigate={() => setSidebarOpen(false)}
           />
         </div>

@@ -56,6 +56,7 @@ export interface ReaderType {
   projectId: string;
   name: string;
   token: string;
+  readerSlug: string;
   pageIds: string[];
   createdAt: string;
 }

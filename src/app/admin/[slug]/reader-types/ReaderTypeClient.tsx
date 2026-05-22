@@ -45,7 +45,6 @@ function PageCheckboxTree({
           <label className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#f9fafb] cursor-pointer transition-colors">
             <input
               type="checkbox"
-              name="pageId"
               value={node.id}
               checked={selected.has(node.id)}
               onChange={() => onToggle(node.id)}
@@ -214,17 +213,18 @@ export default function ReaderTypeClient({
     })
   }
 
-  function getPublishLink(token: string) {
-    if (typeof window !== 'undefined') {
-      return `${window.location.origin}/${project.slug}/r/${token}`
-    }
-    return `/${project.slug}/r/${token}`
+  function getPublishLink(rt: ReaderType) {
+    return rt.readerSlug
+      ? `/${project.slug}/${rt.readerSlug}`
+      : `/${project.slug}/r/${rt.token}`
   }
 
-  function copyLink(token: string) {
-    const link = getPublishLink(token)
-    navigator.clipboard.writeText(link).then(() => {
-      setCopied(token)
+  function copyLink(rt: ReaderType) {
+    const path = rt.readerSlug
+      ? `/${project.slug}/${rt.readerSlug}`
+      : `/${project.slug}/r/${rt.token}`
+    navigator.clipboard.writeText(`${window.location.origin}${path}`).then(() => {
+      setCopied(rt.token)
       setTimeout(() => setCopied(null), 2000)
     })
   }
@@ -322,16 +322,16 @@ export default function ReaderTypeClient({
                         {/* Publish link */}
                         <div className="flex items-center gap-2">
                           <code className="text-xs text-[#5b5ce2] bg-[#ede9fe] px-2 py-1 rounded-md truncate max-w-sm">
-                            /{project.slug}/r/{rt.token}
+                            {rt.readerSlug ? `/${project.slug}/${rt.readerSlug}` : `/${project.slug}/r/${rt.token}`}
                           </code>
                           <button
-                            onClick={() => copyLink(rt.token)}
+                            onClick={() => copyLink(rt)}
                             className="text-xs px-2.5 py-1 rounded-lg border border-[#e5e7eb] text-[#374151] hover:border-[#5b5ce2] hover:text-[#5b5ce2] transition-colors shrink-0"
                           >
                             {copied === rt.token ? '✓ Copied' : 'Copy Link'}
                           </button>
                           <a
-                            href={`/${project.slug}/r/${rt.token}`}
+                            href={getPublishLink(rt)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs px-2.5 py-1 rounded-lg border border-[#e5e7eb] text-[#374151] hover:border-[#5b5ce2] hover:text-[#5b5ce2] transition-colors shrink-0"
