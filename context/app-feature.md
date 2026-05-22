@@ -4,17 +4,31 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-Completed — Markdown Editor Dynamic Icons feature implemented (search input with instant keyword filtering in IconPicker dropdown, auto-focus on open, no-match empty state, 3 additional icons added to SVG_ICONS registry)
+In Progress — Super Admin (Phase 1): centralized project and user access control with dedicated Users Management module
 
 ## Goals
 
+### Super Admin
+- Super Admin can login using admin credentials and has access to all projects and modules
+- Left side mega menu adds two new options: **Projects Management** and **Users Management**
+- Projects Management: current screen and flow remain unchanged
+- Users Management — listing: table of created assistant admin users with search filter
+- Users Management — Create User button opens popup with fields: Username, Email, Password, Select Project (all active projects; one selectable)
+- Created user gets access only to the selected project; cannot access other projects after login
+- User actions: Edit User, Delete User
+- Super Admin can manage all users and projects across the system
+- Project-specific access: after login, created user sees only their assigned project
+
 ### Markdown Editor Dynamic Icons
-- Dynamic icon search in the Icon field on Add Page and Edit Page
+- Existing "Icon" field remains in Add/Edit Page; dynamic search added to icon selection
 - User can search icons by keyword/name; matching icons display instantly while typing
-- Multiple related icons shown in search results; user selects any icon from results
-- Selected icon previews correctly in the editor before saving
+- Search covers both **local** SVG icons (`public/icons/`) and **global** Lucide library (~100 curated icons)
+- Both icon sections shown simultaneously when results exist; no-match state handled per section
+- Selected icon previews correctly in editor (trigger button shows icon)
+- Local SVG icons stored as filename (e.g. `sales`), global Lucide icons stored as `lucide:<name>`
 - Saved icon displays consistently across: left side menu, page listing, and live site navigation
-- No changes to existing Add/Edit Page flow; existing saved icons continue working properly
+- Local SVG icons rendered as `<img src="/icons/{name}.svg" />`; Lucide icons rendered via `PageIcon` component
+- No changes to existing Add/Edit Page flow; existing saved icons (local SVG filenames, legacy emoji/text) continue working properly
 
 ### Admin Dashboard (Project Control Panel)
 - Project-scoped dashboard with top header (logo, project breadcrumb, view live site, user profile)

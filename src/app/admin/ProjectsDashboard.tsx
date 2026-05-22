@@ -252,6 +252,35 @@ export default function ProjectsDashboard({
               Manage All Projects
             </Link>
           </div>
+
+          {/* ── Super Admin Mega Menu ── */}
+          {user.isSuperAdmin && (
+            <nav className="px-4 pb-4">
+              <p className="text-xs text-[#6b7280] uppercase font-semibold mb-2 tracking-wide">
+                Management
+              </p>
+              <ul className="space-y-1">
+                <li>
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-[#5b5ce2] bg-[#ede9fe] transition-colors"
+                  >
+                    <span className="text-base">🗂️</span>
+                    Projects Management
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/admin/users"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#374151] hover:bg-[#f9fafb] transition-colors"
+                  >
+                    <span className="text-base">👥</span>
+                    Users Management
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          )}
         </aside>
 
         {/* ── Main content ── */}
