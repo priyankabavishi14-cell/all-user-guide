@@ -6,12 +6,10 @@ import Link from 'next/link'
 import type { Project, Page } from '@/types'
 import { createPageAction, type CreatePageState } from './actions'
 import IconPicker from '@/components/admin/IconPicker'
-import { renderMarkdown } from '@/lib/render-markdown'
 
 interface Props {
   project: Project
   existingPages: Page[]
-  availableIcons: string[]
 }
 
 type ViewMode = 'editor' | 'preview' | 'split'
@@ -286,7 +284,7 @@ function renderMarkdown(md: string): string {
 const AUTOSAVE_KEY = (projectId: string) => `autosave_${projectId}_new`
 const AUTOSAVE_DELAY = 1500
 
-export default function CreatePageEditor({ project, existingPages, availableIcons }: Props) {
+export default function CreatePageEditor({ project, existingPages }: Props) {
   const router = useRouter()
   const [viewMode, setViewMode]         = useState<ViewMode>('split')
   const [title, setTitle]               = useState('')
@@ -298,6 +296,7 @@ export default function CreatePageEditor({ project, existingPages, availableIcon
   const [inTable, setInTable] = useState(false)
 
   const [draftLabel, setDraftLabel] = useState('')
+  const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
 
   const toastTimer      = useRef<ReturnType<typeof setTimeout> | null>(null)
   const editorRef       = useRef<HTMLTextAreaElement>(null)
@@ -331,13 +330,15 @@ export default function CreatePageEditor({ project, existingPages, availableIcon
   useEffect(() => {
     if (!title && !content) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    setAutosaveStatus('saving')
     autosaveTimer.current = setTimeout(() => {
       try {
         localStorage.setItem(draftKey, JSON.stringify({ title, icon, content }))
+        setAutosaveStatus('saved')
         setDraftLabel('Draft saved')
         if (draftLabelTimer.current) clearTimeout(draftLabelTimer.current)
-        draftLabelTimer.current = setTimeout(() => setDraftLabel(''), 2000)
-      } catch {}
+        draftLabelTimer.current = setTimeout(() => { setDraftLabel(''); setAutosaveStatus('idle') }, 2000)
+      } catch { setAutosaveStatus('idle') }
     }, 1500)
     return () => { if (autosaveTimer.current) clearTimeout(autosaveTimer.current) }
   }, [title, icon, content])
@@ -961,7 +962,7 @@ export default function CreatePageEditor({ project, existingPages, availableIcon
 
           <div>
             <label className="block text-xs font-semibold text-[#374151] mb-1">Icon</label>
-            <IconPicker value={icon} onChange={setIcon} icons={availableIcons} />
+            <IconPicker value={icon} onChange={setIcon} />
           </div>
 
           <div>
