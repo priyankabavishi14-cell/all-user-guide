@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { resolveAuth } from '@/lib/session'
 import { projects as mockProjects, pages as mockPages, currentUser as mockUser } from '@/lib/mock-data'
 import type { Project, Page, User } from '@/types'
 import ManagePagesClient from './ManagePagesClient'
@@ -22,40 +23,15 @@ export default async function ManagePagesPage({
   let user: User = mockUser
 
   try {
-    const session = await prisma.session.findUnique({
-      where: { sessionToken: token },
-      include: {
-        user: { include: { projects: { orderBy: { createdAt: 'desc' } } } },
-      },
-    })
+    const auth = await resolveAuth(token)
+    if (!auth) redirect('/admin/login')
 
-    if (!session || session.expires < new Date()) redirect('/admin/login')
+    user = auth.user
+    allProjects = auth.allProjects
 
-    user = {
-      id: session.user.id,
-      name: session.user.name,
-      email: session.user.email,
-      phone: session.user.phone ?? '',
-      isSuperAdmin: session.user.isSuperAdmin,
-      createdAt: session.user.createdAt.toISOString(),
-    }
-
-    allProjects = session.user.projects.map((p) => ({
-      id: p.id,
-      title: p.title,
-      slug: p.slug,
-      description: p.description ?? '',
-      frontendUrl: p.frontendUrl ?? '',
-      backendUrl: p.backendUrl ?? '',
-      isActive: p.isActive,
-      welcomeScreenEnabled: p.welcomeScreenEnabled,
-      createdBy: p.createdBy,
-      createdAt: p.createdAt.toISOString(),
-    }))
-
-    const dbProject = session.user.projects.find((p) => p.slug === slug)
+    const dbProject = auth.allProjects.find((p) => p.slug === slug)
     if (dbProject) {
-      project = allProjects.find((p) => p.slug === slug)
+      project = dbProject
 
       const dbPages = await prisma.page.findMany({
         where: { projectId: dbProject.id },

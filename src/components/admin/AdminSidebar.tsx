@@ -31,9 +31,9 @@ export default function AdminSidebar({ project, allProjects, activePage }: Props
         <Link
           href={`/admin/${project.slug}`}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activePage === 'manage-pages'
-              ? 'text-[#374151] hover:bg-[#f9fafb]'
-              : 'bg-[#ede9fe] text-[#5b5ce2]'
+            !activePage || activePage === 'dashboard'
+              ? 'bg-[#ede9fe] text-[#5b5ce2]'
+              : 'text-[#374151] hover:bg-[#f9fafb]'
           }`}
         >
           <span>📊</span>

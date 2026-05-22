@@ -146,7 +146,7 @@ export default function UsersClient({
   const [formName, setFormName] = useState('')
   const [formEmail, setFormEmail] = useState('')
   const [formPassword, setFormPassword] = useState('')
-  const [formConfirmPassword, setFormConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [formRole, setFormRole] = useState<'admin' | 'viewer'>('viewer')
   const [formAccessType, setFormAccessType] = useState<'full' | 'restricted'>('full')
   const [selectedPageIds, setSelectedPageIds] = useState<Set<string>>(new Set())
@@ -181,7 +181,7 @@ export default function UsersClient({
     setFormName('')
     setFormEmail('')
     setFormPassword('')
-    setFormConfirmPassword('')
+    setShowPassword(false)
     setFormRole('viewer')
     setFormAccessType('full')
     setSelectedPageIds(new Set())
@@ -200,7 +200,7 @@ export default function UsersClient({
     setFormName(u.name)
     setFormEmail(u.email)
     setFormPassword('')
-    setFormConfirmPassword('')
+    setShowPassword(false)
     setFormRole(u.role)
     setFormAccessType(u.accessType)
     setSelectedPageIds(new Set(u.allowedPageIds))
@@ -233,24 +233,26 @@ export default function UsersClient({
 
   function handleSubmit() {
     setFormError('')
+    const errs: Record<string, string> = {}
+    if (!formName.trim()) errs.name = 'Name is required'
+    if (!formEmail.trim()) {
+      errs.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail.trim())) {
+      errs.email = 'Please enter a valid email address'
+    }
+    if (modalMode === 'add' && (!formPassword || formPassword.length < 6)) {
+      errs.password = 'Password must be at least 6 characters'
+    }
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs)
+      return
+    }
     setFieldErrors({})
-
-    // Client-side confirm password check
-    const isNew = modalMode === 'add'
-    if (isNew && formPassword !== formConfirmPassword) {
-      setFieldErrors({ confirmPassword: 'Passwords do not match' })
-      return
-    }
-    if (!isNew && formPassword && formPassword !== formConfirmPassword) {
-      setFieldErrors({ confirmPassword: 'Passwords do not match' })
-      return
-    }
 
     const fd = new FormData()
     fd.append('name', formName)
     fd.append('email', formEmail)
     fd.append('password', formPassword)
-    fd.append('confirmPassword', formConfirmPassword)
     fd.append('role', formRole)
     fd.append('accessType', formAccessType)
     if (formAccessType === 'restricted') {
@@ -352,28 +354,25 @@ export default function UsersClient({
               required={!isEdit}
               hint={isEdit ? '(leave blank to keep current)' : undefined}
             >
-              <input
-                type="password"
-                value={formPassword}
-                onChange={(e) => setFormPassword(e.target.value)}
-                placeholder={isEdit ? '••••••••' : 'Min. 6 characters'}
-                className={inputCls(fieldErrors.password)}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={formPassword}
+                  onChange={(e) => setFormPassword(e.target.value)}
+                  placeholder={isEdit ? '••••••••' : 'Min. 6 characters'}
+                  className={`${inputCls(fieldErrors.password)} pr-10`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#374151] transition-colors text-sm"
+                  tabIndex={-1}
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
               {fieldErrors.password && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrors.password}</p>
-              )}
-            </Field>
-
-            <Field label="Confirm Password" required={!isEdit && !!formPassword}>
-              <input
-                type="password"
-                value={formConfirmPassword}
-                onChange={(e) => setFormConfirmPassword(e.target.value)}
-                placeholder="Re-enter password"
-                className={inputCls(fieldErrors.confirmPassword)}
-              />
-              {fieldErrors.confirmPassword && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.confirmPassword}</p>
               )}
             </Field>
 
