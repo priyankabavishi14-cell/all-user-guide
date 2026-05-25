@@ -4,9 +4,33 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
+Completed — Design Changes (Phase 1): UI/UX and responsive design improvements for Live Site View, Manage Pages, and Markdown Editor
+
 Completed — Reader Type (Phase 1): project-specific live site access management with unique publish links and page-level visibility control
 
 ## Goals
+
+### Design Changes (Phase 1)
+
+#### Live Site View
+- Long menu option names not displaying properly — improve menu design and spacing for long text labels
+- Improve overall responsiveness for desktop, tablet, and mobile screens
+- Fix left side menu arrow icon alignment and display
+
+#### Manage Pages → Edit Page
+- Icon field click breaks left side layout — fix UI alignment and spacing
+- Make Edit Page screen fully responsive across all screen sizes
+
+#### Manage Pages → Edit Page — Markdown List Rendering
+- Bullet list and numbered list not rendering correctly on initial page load
+- Existing formatting must display properly without any manual action from the user
+
+#### Manage Pages → Create/Edit Page — Editor Stability
+- Adding a heading causes automatic scroll to top — prevent unwanted scroll
+- Adding icons in last section scrolls editor to top — prevent unexpected scroll
+- Markdown editor must maintain current scroll position during all editing actions
+
+---
 
 ### Reader Type
 - New **Reader Type** menu option added to the project-specific left side mega menu
@@ -451,6 +475,13 @@ Completed — Reader Type (Phase 1): project-specific live site access managemen
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-25 — Implemented Design Changes Phase 1
+- Fixed `FrontendSidebar`: replaced unicode arrows with SVG chevrons that rotate 90° on expand; moved toggle to the left of the page title with a `w-7` spacer for alignment; active highlight applied to the full row container; long titles use `truncate` with `min-w-0` to prevent overflow
+- Fixed `FrontendShell`: added `overflow-hidden` to root container; hamburger icon toggles to X when sidebar is open; sidebar uses `fixed inset-y-0 left-0 z-30` on mobile and `md:static md:flex md:shrink-0` on desktop; mobile overlay added; `min-w-0` on main content prevents flex overflow
+- Fixed `IconPicker`: popover rendered with `position: fixed` calculated via `getBoundingClientRect()` so it escapes `overflow-y-auto` ancestors and no longer breaks the left metadata panel layout; scroll and resize listeners reposition the popover in real time
+- Fixed `CreatePageEditor` and `EditPageEditor` — markdown list rendering: updated `renderMarkdown` paragraph guard to also skip blocks that contain block-level closing tags (`</ul>`, `</ol>`, `</li>`, `</table>`, `</pre>`, `</blockquote>`, `</h1>`–`</h6>`), so bullet and numbered lists render correctly on initial page load without requiring any manual action
+- Fixed `CreatePageEditor` and `EditPageEditor` — editor scroll: changed all `el.focus()` calls (inside `requestAnimationFrame`) to `el.focus({ preventScroll: true })` to prevent the page from jumping to the top when toolbar buttons (headings, text styles, lists, divider, table, image) are clicked
 
 ### 2026-05-22 — Implemented Reader Type
 - Added `ReaderType` and `ReaderTypePageSelection` models to `prisma/schema.prisma`; applied migration `20260522105604_add_reader_types`

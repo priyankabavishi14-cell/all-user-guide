@@ -50,8 +50,8 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, re
   }
 
   return (
-    <aside className="w-60 shrink-0 bg-white border-r border-[#e5e7eb] overflow-y-auto h-full">
-      <div className="p-4">
+    <aside className="w-64 shrink-0 bg-white border-r border-[#e5e7eb] overflow-y-auto h-full flex flex-col">
+      <div className="p-4 flex-1">
         <p className="text-xs text-[#6b7280] uppercase font-semibold mb-3 tracking-wide">
           Contents
         </p>
@@ -63,35 +63,41 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, re
 
             return (
               <div key={page.id}>
-                <div className="flex items-center gap-1">
+                <div className={`flex items-center rounded-lg transition-colors ${isActive ? 'bg-[#ede9fe]' : 'hover:bg-[#f3f4f6]'}`}>
+                  {/* Expand/collapse toggle — always reserve space for alignment */}
+                  {hasChildren ? (
+                    <button
+                      onClick={() => toggleExpand(page.id)}
+                      className="shrink-0 w-7 h-8 flex items-center justify-center text-[#9ca3af] hover:text-[#5b5ce2] transition-colors"
+                      aria-label={expanded.has(page.id) ? 'Collapse' : 'Expand'}
+                    >
+                      <svg
+                        className={`w-3.5 h-3.5 transition-transform duration-150 ${expanded.has(page.id) ? 'rotate-90' : ''}`}
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <span className="shrink-0 w-7" />
+                  )}
                   <Link
                     href={pageHref(page.slug)}
                     onClick={onNavigate}
-                    className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                      isActive
-                        ? 'bg-[#ede9fe] text-[#5b5ce2] font-medium'
-                        : 'text-[#374151] hover:bg-[#f3f4f6]'
+                    className={`flex-1 min-w-0 flex items-center gap-2 pr-3 py-2 text-sm font-medium ${
+                      isActive ? 'text-[#5b5ce2]' : 'text-[#374151]'
                     }`}
                   >
                     {page.icon
                       ? <PageIcon value={page.icon} className="w-4 h-4 shrink-0" />
-                      : <span className="shrink-0">📄</span>
+                      : <span className="shrink-0 text-base leading-none">📄</span>
                     }
-                    <span className="truncate">{page.title}</span>
+                    <span className="truncate leading-snug">{page.title}</span>
                   </Link>
-                  {hasChildren && (
-                    <button
-                      onClick={() => toggleExpand(page.id)}
-                      className="p-1.5 rounded-lg text-[#9ca3af] hover:text-[#5b5ce2] hover:bg-[#f3f4f6] transition-colors shrink-0 text-xs"
-                      aria-label={expanded.has(page.id) ? 'Collapse' : 'Expand'}
-                    >
-                      {expanded.has(page.id) ? '▾' : '▸'}
-                    </button>
-                  )}
                 </div>
 
                 {hasChildren && expanded.has(page.id) && (
-                  <div className="ml-2 mt-0.5 flex flex-col gap-0.5">
+                  <div className="ml-7 mt-0.5 flex flex-col gap-0.5">
                     {children.map((child) => {
                       const isChildActive = child.slug === activePageSlug
                       return (
@@ -99,17 +105,17 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, re
                           key={child.id}
                           href={pageHref(child.slug)}
                           onClick={onNavigate}
-                          className={`flex items-center gap-2 pl-6 pr-3 py-1.5 rounded-lg text-sm transition-colors ${
+                          className={`flex items-center gap-2 pl-3 pr-3 py-1.5 rounded-lg text-sm transition-colors min-w-0 ${
                             isChildActive
                               ? 'bg-[#ede9fe] text-[#5b5ce2] font-medium'
                               : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#374151]'
                           }`}
                         >
                           {child.icon
-                            ? <PageIcon value={child.icon} className="w-4 h-4 shrink-0" />
-                            : <span className="shrink-0 text-xs">📄</span>
+                            ? <PageIcon value={child.icon} className="w-3.5 h-3.5 shrink-0" />
+                            : <span className="shrink-0 text-xs leading-none">📄</span>
                           }
-                          <span className="truncate">{child.title}</span>
+                          <span className="truncate leading-snug">{child.title}</span>
                         </Link>
                       )
                     })}

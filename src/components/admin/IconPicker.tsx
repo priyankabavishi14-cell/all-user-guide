@@ -12,23 +12,64 @@ interface Props {
   onChange: (icon: string) => void
 }
 
+interface PopoverPos {
+  top: number
+  left: number
+  width: number
+  openUpward: boolean
+}
+
 export default function IconPicker({ value, onChange }: Props) {
   const [open, setOpen]         = useState(false)
   const [query, setQuery]       = useState('')
-  const ref                     = useRef<HTMLDivElement>(null)
+  const [pos, setPos]           = useState<PopoverPos | null>(null)
+  const containerRef            = useRef<HTMLDivElement>(null)
+  const triggerRef              = useRef<HTMLButtonElement>(null)
   const searchRef               = useRef<HTMLInputElement>(null)
 
+  // Close on outside click
   useEffect(() => {
     function onMouseDown(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
     }
     document.addEventListener('mousedown', onMouseDown)
     return () => document.removeEventListener('mousedown', onMouseDown)
   }, [])
 
+  // Recalculate position on scroll/resize so the popover tracks the trigger
+  useEffect(() => {
+    if (!open) return
+    function update() {
+      if (!triggerRef.current) return
+      const rect = triggerRef.current.getBoundingClientRect()
+      const popoverHeight = 360
+      const spaceBelow = window.innerHeight - rect.bottom
+      const openUpward = spaceBelow < popoverHeight && rect.top > popoverHeight
+      setPos({
+        top: openUpward ? rect.top - popoverHeight - 4 : rect.bottom + 4,
+        left: rect.left,
+        width: Math.max(rect.width, 256),
+        openUpward,
+      })
+    }
+    update()
+    window.addEventListener('scroll', update, true)
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update, true)
+      window.removeEventListener('resize', update)
+    }
+  }, [open])
+
+  function openPicker() {
+    setQuery('')
+    setOpen((v) => !v)
+  }
+
   useEffect(() => {
     if (open) {
-      setQuery('')
       requestAnimationFrame(() => searchRef.current?.focus())
     }
   }, [open])
@@ -43,20 +84,20 @@ export default function IconPicker({ value, onChange }: Props) {
     ? LUCIDE_ICON_NAMES.filter((name) => name.toLowerCase().includes(q) || lucideDisplayName(name).toLowerCase().includes(q))
     : LUCIDE_ICON_NAMES
 
-  // Display label for trigger button
   let label = 'No icon'
   if (value) {
-    if (isSvgIcon(value))     label = value.charAt(0).toUpperCase() + value.slice(1)
+    if (isSvgIcon(value))       label = value.charAt(0).toUpperCase() + value.slice(1)
     else if (isLucideIcon(value)) label = lucideDisplayName(getLucideIconName(value))
-    else label = value
+    else                        label = value
   }
 
   return (
-    <div ref={ref} className="relative">
-      {/* Trigger button */}
+    <div ref={containerRef} className="relative">
+      {/* Trigger */}
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={openPicker}
         className="w-full flex items-center gap-2 border border-[#e5e7eb] rounded-lg px-3 py-2 text-sm bg-white hover:bg-[#f9fafb] focus:outline-none focus:ring-2 focus:ring-[#5b5ce2] transition"
       >
         {value ? (
@@ -70,10 +111,19 @@ export default function IconPicker({ value, onChange }: Props) {
         </svg>
       </button>
 
-      {/* Popover */}
-      {open && (
-        <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-[#e5e7eb] rounded-xl shadow-lg p-3 w-64">
-          {/* Search input */}
+      {/* Popover — fixed so it escapes any overflow:auto ancestor */}
+      {open && pos && (
+        <div
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            width: pos.width,
+            zIndex: 9999,
+          }}
+          className="bg-white border border-[#e5e7eb] rounded-xl shadow-xl p-3"
+        >
+          {/* Search */}
           <div className="relative mb-3">
             <svg
               className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9ca3af] pointer-events-none"
@@ -93,7 +143,7 @@ export default function IconPicker({ value, onChange }: Props) {
           </div>
 
           <div className="max-h-64 overflow-y-auto space-y-3">
-            {/* Local SVG section */}
+            {/* Local SVG icons */}
             {localResults.length > 0 && (
               <div>
                 <p className="text-[10px] font-semibold text-[#9ca3af] uppercase tracking-wider mb-1.5">
@@ -120,7 +170,7 @@ export default function IconPicker({ value, onChange }: Props) {
               </div>
             )}
 
-            {/* Lucide global icons section */}
+            {/* Lucide global icons */}
             {lucideResults.length > 0 && (
               <div>
                 <p className="text-[10px] font-semibold text-[#9ca3af] uppercase tracking-wider mb-1.5">
@@ -153,7 +203,6 @@ export default function IconPicker({ value, onChange }: Props) {
               </div>
             )}
 
-            {/* No results */}
             {localResults.length === 0 && lucideResults.length === 0 && (
               <p className="text-xs text-[#9ca3af] text-center py-4">
                 No icons match &ldquo;{query}&rdquo;
