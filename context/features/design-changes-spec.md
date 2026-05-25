@@ -12,19 +12,19 @@ This update includes multiple UI/UX and responsive design improvements for the L
 
 #### Left Side Menu Design
 
-* Long menu option names currently not displaying properly
-* Improve menu design and spacing for long text labels
-* Make sure menu items display properly in all screen sizes
+* ~~Long menu option names currently not displaying properly~~ **[DONE]** Long menu option names now show in full — text wraps instead of being cut off with ellipsis
+* ~~Improve menu design and spacing for long text labels~~ **[DONE]**
+* ~~Make sure menu items display properly in all screen sizes~~ **[DONE]**
 
 #### Responsive Layout
 
-* Improve overall responsiveness for desktop, tablet, and mobile screens
-* Make sure content and menu fit properly in all resolutions
+* ~~Improve overall responsiveness for desktop, tablet, and mobile screens~~ **[DONE]**
+* ~~Make sure content and menu fit properly in all resolutions~~ **[DONE]**
 
 #### Arrow Icon Design
 
-* Improve left side menu arrow icon alignment/design
-* Arrow icon should display properly with menu items
+* ~~Improve left side menu arrow icon alignment/design~~ **[DONE]** Replaced unicode arrows with SVG chevrons that rotate 90° on expand
+* ~~Arrow icon should display properly with menu items~~ **[DONE]**
 
 ---
 
@@ -32,13 +32,13 @@ This update includes multiple UI/UX and responsive design improvements for the L
 
 #### Icon Field UI Issue
 
-* When user clicks on Icon field options, left side layout/design breaks
-* Fix left side UI alignment and spacing issue
+* ~~When user clicks on Icon field options, left side layout/design breaks~~ **[DONE]** IconPicker popover uses `position: fixed` with `getBoundingClientRect()` to escape overflow ancestors
+* ~~Fix left side UI alignment and spacing issue~~ **[DONE]**
 
 #### Responsive Design
 
-* Make Edit Page screen responsive in all screen sizes
-* Ensure editor and side sections display properly
+* ~~Make Edit Page screen responsive in all screen sizes~~ **[DONE]**
+* ~~Ensure editor and side sections display properly~~ **[DONE]**
 
 ---
 
@@ -46,13 +46,13 @@ This update includes multiple UI/UX and responsive design improvements for the L
 
 #### Markdown List Rendering
 
-* When user opens existing page, bullet list and numbered list not showing properly initially
-* After pressing Enter key formatting becomes correct
+* ~~When user opens existing page, bullet list and numbered list not showing properly initially~~ **[DONE]**
+* ~~After pressing Enter key formatting becomes correct~~ **[DONE]**
 
 ##### Required Fix
 
-* Existing bullet/numbered list formatting should display properly on page load
-* No manual action should be required from user
+* ~~Existing bullet/numbered list formatting should display properly on page load~~ **[DONE]** `renderMarkdown` paragraph guard updated to skip blocks with block-level closing tags
+* ~~No manual action should be required from user~~ **[DONE]**
 
 ---
 
@@ -60,18 +60,18 @@ This update includes multiple UI/UX and responsive design improvements for the L
 
 #### Auto Scroll Issue
 
-* When user adds heading in markdown editor, page automatically scrolls to top
-* Fix automatic unwanted page scrolling behavior
+* ~~When user adds heading in markdown editor, page automatically scrolls to top~~ **[DONE]** All toolbar `el.focus()` calls updated to `el.focus({ preventScroll: true })`
+* ~~Fix automatic unwanted page scrolling behavior~~ **[DONE]**
 
 #### Icon Section Scroll Issue
 
-* When user adds icons in last section of page, editor scrolls to top automatically
-* Prevent unexpected scroll movement during editing
+* ~~When user adds icons in last section of page, editor scrolls to top automatically~~ **[DONE]**
+* ~~Prevent unexpected scroll movement during editing~~ **[DONE]**
 
 #### Editor Stability
 
-* Markdown editor should maintain current scroll position while editing
-* Smooth editing experience should work consistently
+* ~~Markdown editor should maintain current scroll position while editing~~ **[DONE]** All `el.focus()` calls in both `CreatePageEditor` and `EditPageEditor` (toolbar functions: headings, text styles, lists, divider, table, image) use `preventScroll: true`
+* ~~Smooth editing experience should work consistently~~ **[DONE]**
 
 ---
 

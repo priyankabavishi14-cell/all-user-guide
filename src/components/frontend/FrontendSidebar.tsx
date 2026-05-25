@@ -50,7 +50,7 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, re
   }
 
   return (
-    <aside className="w-64 shrink-0 bg-white border-r border-[#e5e7eb] overflow-y-auto h-full flex flex-col">
+    <aside className="w-80 shrink-0 bg-white border-r border-[#e5e7eb] overflow-y-auto h-full flex flex-col">
       <div className="p-4 flex-1">
         <p className="text-xs text-[#6b7280] uppercase font-semibold mb-3 tracking-wide">
           Contents
@@ -92,7 +92,7 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, re
                       ? <PageIcon value={page.icon} className="w-4 h-4 shrink-0" />
                       : <span className="shrink-0 text-base leading-none">📄</span>
                     }
-                    <span className="truncate leading-snug">{page.title}</span>
+                    <span className="break-words leading-snug">{page.title}</span>
                   </Link>
                 </div>
 
@@ -115,7 +115,7 @@ export default function FrontendSidebar({ projectSlug, pages, activePageSlug, re
                             ? <PageIcon value={child.icon} className="w-3.5 h-3.5 shrink-0" />
                             : <span className="shrink-0 text-xs leading-none">📄</span>
                           }
-                          <span className="truncate leading-snug">{child.title}</span>
+                          <span className="break-words leading-snug">{child.title}</span>
                         </Link>
                       )
                     })}

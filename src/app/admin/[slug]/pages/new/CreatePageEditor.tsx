@@ -420,7 +420,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
     const delta      = newBlock.length - block.length
     const newCursor  = selectionEnd + delta
     requestAnimationFrame(() => {
-      el.focus()
+      el.focus({ preventScroll: true })
       el.setSelectionRange(newCursor, newCursor)
     })
   }
@@ -449,7 +449,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
       const newContent = content.slice(0, lineStart) + newBlock + content.slice(lineEnd)
       setContent(newContent)
       requestAnimationFrame(() => {
-        el.focus()
+        el.focus({ preventScroll: true })
         const newStart = Math.max(lineStart, selectionStart + (e.shiftKey ? -2 : 2))
         el.setSelectionRange(newStart, Math.max(newStart, selectionEnd + delta))
       })
@@ -534,7 +534,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
       selectionStart + (newPrefix.length - oldPrefixLen)
     )
     requestAnimationFrame(() => {
-      el.focus()
+      el.focus({ preventScroll: true })
       el.setSelectionRange(newCursor, newCursor)
     })
   }
@@ -565,7 +565,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
       }
       setContent(newContent)
       requestAnimationFrame(() => {
-        el.focus()
+        el.focus({ preventScroll: true })
         el.setSelectionRange(newCursor, newCursor)
       })
       return
@@ -587,7 +587,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
       const newEnd   = newStart + selected.length
       setContent(newContent)
       requestAnimationFrame(() => {
-        el.focus()
+        el.focus({ preventScroll: true })
         el.setSelectionRange(newStart, newEnd)
       })
     } else if (selected) {
@@ -598,7 +598,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
       const newEnd   = newStart + selected.length
       setContent(newContent)
       requestAnimationFrame(() => {
-        el.focus()
+        el.focus({ preventScroll: true })
         el.setSelectionRange(newStart, newEnd)
       })
     } else {
@@ -607,7 +607,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
       const newCursor  = start + style.prefix.length
       setContent(newContent)
       requestAnimationFrame(() => {
-        el.focus()
+        el.focus({ preventScroll: true })
         el.setSelectionRange(newCursor, newCursor)
       })
     }
@@ -621,7 +621,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
     const newContent = content.slice(0, pos) + tableText + content.slice(pos)
     setContent(newContent)
     requestAnimationFrame(() => {
-      el.focus()
+      el.focus({ preventScroll: true })
       el.setSelectionRange(pos + tableText.length, pos + tableText.length)
     })
   }
@@ -705,7 +705,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
     const newContent = content.slice(0, pos) + dividerText + content.slice(pos)
     setContent(newContent)
     requestAnimationFrame(() => {
-      el.focus()
+      el.focus({ preventScroll: true })
       el.setSelectionRange(pos + dividerText.length, pos + dividerText.length)
     })
   }
