@@ -60,16 +60,18 @@ export async function createReaderTypeAction(
     const readerSlug = await uniqueReaderSlug(projectId, nameToSlug(name))
     const token = crypto.randomUUID()
 
-    await prisma.$transaction(async (tx) => {
-      const readerType = await tx.readerType.create({
-        data: { projectId, name, token, readerSlug },
-      })
-
-      if (pageIds.length > 0) {
-        await tx.readerTypePageSelection.createMany({
-          data: pageIds.map((pageId) => ({ readerTypeId: readerType.id, pageId })),
-        })
-      }
+    await prisma.readerType.create({
+      data: {
+        projectId,
+        name,
+        token,
+        readerSlug,
+        ...(pageIds.length > 0 && {
+          pageSelections: {
+            createMany: { data: pageIds.map((pageId) => ({ pageId })) },
+          },
+        }),
+      },
     })
 
     revalidatePath(`/admin/${projectSlug}/reader-types`)
@@ -96,19 +98,18 @@ export async function updateReaderTypeAction(
   try {
     const readerSlug = await uniqueReaderSlug(projectId, nameToSlug(name), readerTypeId)
 
-    await prisma.$transaction(async (tx) => {
-      await tx.readerType.update({
-        where: { id: readerTypeId },
-        data: { name, readerSlug },
-      })
-
-      await tx.readerTypePageSelection.deleteMany({ where: { readerTypeId } })
-
-      if (pageIds.length > 0) {
-        await tx.readerTypePageSelection.createMany({
-          data: pageIds.map((pageId) => ({ readerTypeId, pageId })),
-        })
-      }
+    await prisma.readerType.update({
+      where: { id: readerTypeId },
+      data: {
+        name,
+        readerSlug,
+        pageSelections: {
+          deleteMany: {},
+          ...(pageIds.length > 0 && {
+            createMany: { data: pageIds.map((pageId) => ({ pageId })) },
+          }),
+        },
+      },
     })
 
     revalidatePath(`/admin/${projectSlug}/reader-types`)
