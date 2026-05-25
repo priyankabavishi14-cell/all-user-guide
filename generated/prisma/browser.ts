@@ -58,6 +58,16 @@ export type PagePermission = Prisma.PagePermissionModel
  */
 export type ViewerSession = Prisma.ViewerSessionModel
 /**
+ * Model ReaderType
+ * 
+ */
+export type ReaderType = Prisma.ReaderTypeModel
+/**
+ * Model ReaderTypePageSelection
+ * 
+ */
+export type ReaderTypePageSelection = Prisma.ReaderTypePageSelectionModel
+/**
  * Model VerificationToken
  * 
  */
