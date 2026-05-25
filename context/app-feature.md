@@ -4,9 +4,33 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
+In Progress — Design Changes (Phase 1): UI/UX and responsive design improvements for Live Site View, Manage Pages, and Markdown Editor
+
 Completed — Reader Type (Phase 1): project-specific live site access management with unique publish links and page-level visibility control
 
 ## Goals
+
+### Design Changes (Phase 1)
+
+#### Live Site View
+- Long menu option names not displaying properly — improve menu design and spacing for long text labels
+- Improve overall responsiveness for desktop, tablet, and mobile screens
+- Fix left side menu arrow icon alignment and display
+
+#### Manage Pages → Edit Page
+- Icon field click breaks left side layout — fix UI alignment and spacing
+- Make Edit Page screen fully responsive across all screen sizes
+
+#### Manage Pages → Edit Page — Markdown List Rendering
+- Bullet list and numbered list not rendering correctly on initial page load
+- Existing formatting must display properly without any manual action from the user
+
+#### Manage Pages → Create/Edit Page — Editor Stability
+- Adding a heading causes automatic scroll to top — prevent unwanted scroll
+- Adding icons in last section scrolls editor to top — prevent unexpected scroll
+- Markdown editor must maintain current scroll position during all editing actions
+
+---
 
 ### Reader Type
 - New **Reader Type** menu option added to the project-specific left side mega menu

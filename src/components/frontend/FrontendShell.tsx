@@ -18,20 +18,26 @@ export default function FrontendShell({ project, pages, activePageSlug, viewer, 
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="h-screen bg-[#f9fafb] flex flex-col">
+    <div className="h-screen bg-[#f9fafb] flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="flex items-center gap-3 px-4 py-3 bg-white border-b border-[#e5e7eb] shrink-0">
+      <header className="flex items-center gap-3 px-4 py-3 bg-white border-b border-[#e5e7eb] shrink-0 z-30">
         <button
-          className="md:hidden p-1 rounded-lg text-[#374151] hover:bg-[#f3f4f6] transition-colors"
+          className="md:hidden p-1.5 rounded-lg text-[#374151] hover:bg-[#f3f4f6] transition-colors shrink-0"
           onClick={() => setSidebarOpen((v) => !v)}
           aria-label="Toggle navigation"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          {sidebarOpen ? (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
         </button>
-        <span className="font-bold text-[#5b5ce2]">GuideManager</span>
-        <span className="bg-[#ede9fe] text-[#5b5ce2] text-xs px-3 py-1 rounded-full font-medium truncate">
+        <span className="font-bold text-[#5b5ce2] shrink-0">GuideManager</span>
+        <span className="bg-[#ede9fe] text-[#5b5ce2] text-xs px-3 py-1 rounded-full font-medium truncate max-w-[180px] sm:max-w-xs">
           {project.title}
         </span>
         {viewer && (
@@ -53,7 +59,7 @@ export default function FrontendShell({ project, pages, activePageSlug, viewer, 
         {/* Mobile overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 z-10 md:hidden"
+            className="fixed inset-0 bg-black/40 z-20 md:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -61,10 +67,11 @@ export default function FrontendShell({ project, pages, activePageSlug, viewer, 
         {/* Sidebar */}
         <div
           className={`
-            fixed top-0 left-0 h-full z-20 pt-[53px] transition-transform duration-200
-            md:static md:h-full md:pt-0 md:z-auto md:translate-x-0 md:block
+            fixed inset-y-0 left-0 z-30 transition-transform duration-200 ease-in-out
+            md:static md:inset-auto md:z-auto md:translate-x-0 md:flex md:shrink-0
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           `}
+          style={{ top: 'var(--header-h, 0)' }}
         >
           <FrontendSidebar
             projectSlug={project.slug}
@@ -77,7 +84,7 @@ export default function FrontendShell({ project, pages, activePageSlug, viewer, 
         </div>
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto min-w-0">
           {children}
         </main>
       </div>

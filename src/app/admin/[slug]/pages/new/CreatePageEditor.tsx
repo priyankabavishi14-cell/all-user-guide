@@ -266,7 +266,7 @@ function renderMarkdown(md: string): string {
     .map((block) => {
       const t = block.trim()
       if (!t) return ''
-      if (/^<[h1-6bpldquo]/.test(t)) return t
+      if (/^<[h1-6bpldquo]/.test(t) || /<\/(ul|ol|li|table|pre|blockquote|h[1-6])>/.test(t)) return t
       return `<p class="mb-3">${t.replace(/\n/g, '<br/>')}</p>`
     })
     .join('\n')
@@ -381,7 +381,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
         setContent(updated)
         const newCursor = pos + syntax.length
         requestAnimationFrame(() => {
-          el.focus()
+          el.focus({ preventScroll: true })
           el.setSelectionRange(newCursor, newCursor)
         })
       } else {
@@ -474,7 +474,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
           const newContent = content.slice(0, lineStart) + content.slice(lineEnd)
           setContent(newContent)
           requestAnimationFrame(() => {
-            el.focus()
+            el.focus({ preventScroll: true })
             el.setSelectionRange(lineStart, lineStart)
           })
         } else if (selectionEnd === lineEnd) {
@@ -492,7 +492,7 @@ export default function CreatePageEditor({ project, existingPages }: Props) {
           setContent(newContent)
           const newCursor = selectionEnd + insertion.length
           requestAnimationFrame(() => {
-            el.focus()
+            el.focus({ preventScroll: true })
             el.setSelectionRange(newCursor, newCursor)
           })
         }
