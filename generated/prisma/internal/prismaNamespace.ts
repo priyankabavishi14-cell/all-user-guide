@@ -392,6 +392,8 @@ export const ModelName = {
   ProjectUser: 'ProjectUser',
   PagePermission: 'PagePermission',
   ViewerSession: 'ViewerSession',
+  ReaderType: 'ReaderType',
+  ReaderTypePageSelection: 'ReaderTypePageSelection',
   VerificationToken: 'VerificationToken'
 } as const
 
@@ -408,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "project" | "page" | "account" | "session" | "projectUser" | "pagePermission" | "viewerSession" | "verificationToken"
+    modelProps: "user" | "project" | "page" | "account" | "session" | "projectUser" | "pagePermission" | "viewerSession" | "readerType" | "readerTypePageSelection" | "verificationToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1004,6 +1006,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ReaderType: {
+      payload: Prisma.$ReaderTypePayload<ExtArgs>
+      fields: Prisma.ReaderTypeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReaderTypeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReaderTypeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>
+        }
+        findFirst: {
+          args: Prisma.ReaderTypeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReaderTypeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>
+        }
+        findMany: {
+          args: Prisma.ReaderTypeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>[]
+        }
+        create: {
+          args: Prisma.ReaderTypeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>
+        }
+        createMany: {
+          args: Prisma.ReaderTypeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReaderTypeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>[]
+        }
+        delete: {
+          args: Prisma.ReaderTypeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>
+        }
+        update: {
+          args: Prisma.ReaderTypeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>
+        }
+        deleteMany: {
+          args: Prisma.ReaderTypeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReaderTypeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReaderTypeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>[]
+        }
+        upsert: {
+          args: Prisma.ReaderTypeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePayload>
+        }
+        aggregate: {
+          args: Prisma.ReaderTypeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReaderType>
+        }
+        groupBy: {
+          args: Prisma.ReaderTypeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReaderTypeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReaderTypeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReaderTypeCountAggregateOutputType> | number
+        }
+      }
+    }
+    ReaderTypePageSelection: {
+      payload: Prisma.$ReaderTypePageSelectionPayload<ExtArgs>
+      fields: Prisma.ReaderTypePageSelectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReaderTypePageSelectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReaderTypePageSelectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>
+        }
+        findFirst: {
+          args: Prisma.ReaderTypePageSelectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReaderTypePageSelectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>
+        }
+        findMany: {
+          args: Prisma.ReaderTypePageSelectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>[]
+        }
+        create: {
+          args: Prisma.ReaderTypePageSelectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>
+        }
+        createMany: {
+          args: Prisma.ReaderTypePageSelectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReaderTypePageSelectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>[]
+        }
+        delete: {
+          args: Prisma.ReaderTypePageSelectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>
+        }
+        update: {
+          args: Prisma.ReaderTypePageSelectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReaderTypePageSelectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReaderTypePageSelectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReaderTypePageSelectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReaderTypePageSelectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReaderTypePageSelectionPayload>
+        }
+        aggregate: {
+          args: Prisma.ReaderTypePageSelectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReaderTypePageSelection>
+        }
+        groupBy: {
+          args: Prisma.ReaderTypePageSelectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReaderTypePageSelectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReaderTypePageSelectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReaderTypePageSelectionCountAggregateOutputType> | number
+        }
+      }
+    }
     VerificationToken: {
       payload: Prisma.$VerificationTokenPayload<ExtArgs>
       fields: Prisma.VerificationTokenFieldRefs
@@ -1225,6 +1375,27 @@ export const ViewerSessionScalarFieldEnum = {
 export type ViewerSessionScalarFieldEnum = (typeof ViewerSessionScalarFieldEnum)[keyof typeof ViewerSessionScalarFieldEnum]
 
 
+export const ReaderTypeScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  name: 'name',
+  token: 'token',
+  readerSlug: 'readerSlug',
+  createdAt: 'createdAt'
+} as const
+
+export type ReaderTypeScalarFieldEnum = (typeof ReaderTypeScalarFieldEnum)[keyof typeof ReaderTypeScalarFieldEnum]
+
+
+export const ReaderTypePageSelectionScalarFieldEnum = {
+  id: 'id',
+  readerTypeId: 'readerTypeId',
+  pageId: 'pageId'
+} as const
+
+export type ReaderTypePageSelectionScalarFieldEnum = (typeof ReaderTypePageSelectionScalarFieldEnum)[keyof typeof ReaderTypePageSelectionScalarFieldEnum]
+
+
 export const VerificationTokenScalarFieldEnum = {
   identifier: 'identifier',
   token: 'token',
@@ -1444,6 +1615,8 @@ export type GlobalOmitConfig = {
   projectUser?: Prisma.ProjectUserOmit
   pagePermission?: Prisma.PagePermissionOmit
   viewerSession?: Prisma.ViewerSessionOmit
+  readerType?: Prisma.ReaderTypeOmit
+  readerTypePageSelection?: Prisma.ReaderTypePageSelectionOmit
   verificationToken?: Prisma.VerificationTokenOmit
 }
 

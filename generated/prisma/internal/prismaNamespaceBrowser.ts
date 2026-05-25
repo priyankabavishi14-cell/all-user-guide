@@ -59,6 +59,8 @@ export const ModelName = {
   ProjectUser: 'ProjectUser',
   PagePermission: 'PagePermission',
   ViewerSession: 'ViewerSession',
+  ReaderType: 'ReaderType',
+  ReaderTypePageSelection: 'ReaderTypePageSelection',
   VerificationToken: 'VerificationToken'
 } as const
 
@@ -184,6 +186,27 @@ export const ViewerSessionScalarFieldEnum = {
 } as const
 
 export type ViewerSessionScalarFieldEnum = (typeof ViewerSessionScalarFieldEnum)[keyof typeof ViewerSessionScalarFieldEnum]
+
+
+export const ReaderTypeScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  name: 'name',
+  token: 'token',
+  readerSlug: 'readerSlug',
+  createdAt: 'createdAt'
+} as const
+
+export type ReaderTypeScalarFieldEnum = (typeof ReaderTypeScalarFieldEnum)[keyof typeof ReaderTypeScalarFieldEnum]
+
+
+export const ReaderTypePageSelectionScalarFieldEnum = {
+  id: 'id',
+  readerTypeId: 'readerTypeId',
+  pageId: 'pageId'
+} as const
+
+export type ReaderTypePageSelectionScalarFieldEnum = (typeof ReaderTypePageSelectionScalarFieldEnum)[keyof typeof ReaderTypePageSelectionScalarFieldEnum]
 
 
 export const VerificationTokenScalarFieldEnum = {

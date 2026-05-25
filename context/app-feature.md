@@ -4,17 +4,40 @@ User Guide Management System — a platform for creating, managing, and displayi
 
 ## Status
 
-Completed — Markdown Editor Dynamic Icons feature implemented (search input with instant keyword filtering in IconPicker dropdown, auto-focus on open, no-match empty state, 3 additional icons added to SVG_ICONS registry)
+Completed — Reader Type (Phase 1): project-specific live site access management with unique publish links and page-level visibility control
 
 ## Goals
 
+### Reader Type
+- New **Reader Type** menu option added to the project-specific left side mega menu
+- Reader Type page: Create Reader Type form with fields — Name, Live Site Menu Design
+- Live Site Menu Design: shows all project pages; user selects/unselects which pages to include
+- Live site menu preview updates dynamically to show only selected pages
+- Every reader type generates a unique publish/live site link
+- Publish link opens only the selected reader type's pages; all other project pages are hidden
+- Selected pages and menu structure are enforced on the live site for that reader type's link
+
+### Super Admin
+- Super Admin can login using admin credentials and has access to all projects and modules
+- Left side mega menu adds two new options: **Projects Management** and **Users Management**
+- Projects Management: current screen and flow remain unchanged
+- Users Management — listing: table of created assistant admin users with search filter
+- Users Management — Create User button opens popup with fields: Username, Email, Password, Select Project (all active projects; one selectable)
+- Created user gets access only to the selected project; cannot access other projects after login
+- User actions: Edit User, Delete User
+- Super Admin can manage all users and projects across the system
+- Project-specific access: after login, created user sees only their assigned project
+
 ### Markdown Editor Dynamic Icons
-- Dynamic icon search in the Icon field on Add Page and Edit Page
+- Existing "Icon" field remains in Add/Edit Page; dynamic search added to icon selection
 - User can search icons by keyword/name; matching icons display instantly while typing
-- Multiple related icons shown in search results; user selects any icon from results
-- Selected icon previews correctly in the editor before saving
+- Search covers both **local** SVG icons (`public/icons/`) and **global** Lucide library (~100 curated icons)
+- Both icon sections shown simultaneously when results exist; no-match state handled per section
+- Selected icon previews correctly in editor (trigger button shows icon)
+- Local SVG icons stored as filename (e.g. `sales`), global Lucide icons stored as `lucide:<name>`
 - Saved icon displays consistently across: left side menu, page listing, and live site navigation
-- No changes to existing Add/Edit Page flow; existing saved icons continue working properly
+- Local SVG icons rendered as `<img src="/icons/{name}.svg" />`; Lucide icons rendered via `PageIcon` component
+- No changes to existing Add/Edit Page flow; existing saved icons (local SVG filenames, legacy emoji/text) continue working properly
 
 ### Admin Dashboard (Project Control Panel)
 - Project-scoped dashboard with top header (logo, project breadcrumb, view live site, user profile)
@@ -428,6 +451,19 @@ Completed — Markdown Editor Dynamic Icons feature implemented (search input wi
 - Welcome screen visibility controlled via admin toggle
 
 ## History
+
+### 2026-05-22 — Implemented Reader Type
+- Added `ReaderType` and `ReaderTypePageSelection` models to `prisma/schema.prisma`; applied migration `20260522105604_add_reader_types`
+- Added `ReaderType` interface to `src/types/index.ts` with `id`, `projectId`, `name`, `token`, `pageIds`, `createdAt`
+- Created `src/app/admin/[slug]/reader-types/actions.ts`: `createReaderTypeAction`, `updateReaderTypeAction`, `deleteReaderTypeAction` with project auth guard
+- Created `src/app/admin/[slug]/reader-types/page.tsx` (Server Component: fetches pages + reader types with page selections)
+- Created `src/app/admin/[slug]/reader-types/ReaderTypeClient.tsx` (Client Component: card listing with name, page badges, publish link; Create/Edit modal with recursive `PageCheckboxTree` + live `SidebarPreview`)
+- Created `src/app/[slug]/r/[token]/page.tsx` (public reader type landing: token lookup, active page filtering, welcome screen or redirect to first page)
+- Created `src/app/[slug]/r/[token]/pages/[pageSlug]/page.tsx` (public reader type page view: shows only reader type's selected pages)
+- Updated `src/components/admin/AdminSidebar.tsx`: added `'reader-types'` to `activePage` union; added Reader Type nav link
+- Updated `src/components/frontend/FrontendShell.tsx` and `FrontendSidebar.tsx`: added `readerTypeToken` prop; sidebar links route to `/{slug}/r/{token}/pages/{pageSlug}` when token is present
+- Routes: `/admin/[slug]/reader-types` (admin), `/{slug}/r/{token}` (public landing), `/{slug}/r/{token}/pages/{pageSlug}` (public page view)
+- Build verified: `npx tsc --noEmit` passes with no TypeScript errors
 
 ### 2026-05-21 — Implemented Markdown Editor Dynamic Icons
 - Updated `src/components/admin/IconPicker.tsx`: added search input at top of dropdown with magnifier icon; auto-focuses on open via `requestAnimationFrame`; clears query on every open

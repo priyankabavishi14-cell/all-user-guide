@@ -5,7 +5,7 @@ import ProjectSwitcher from './ProjectSwitcher'
 interface Props {
   project: Project
   allProjects: Project[]
-  activePage?: 'dashboard' | 'manage-pages' | 'users'
+  activePage?: 'dashboard' | 'manage-pages' | 'users' | 'reader-types'
   viewerRole?: 'admin' | 'viewer'
 }
 
@@ -61,6 +61,17 @@ export default function AdminSidebar({ project, allProjects, activePage, viewerR
         >
           <span>👥</span>
           Manage Users
+        </Link>
+        <Link
+          href={`/admin/${project.slug}/reader-types`}
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+            activePage === 'reader-types'
+              ? 'bg-[#ede9fe] text-[#5b5ce2] font-medium'
+              : 'text-[#374151] hover:bg-[#f9fafb]'
+          }`}
+        >
+          <span>🔗</span>
+          Reader Type
         </Link>
       </nav>
 

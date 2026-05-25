@@ -225,6 +225,7 @@ export type ProjectWhereInput = {
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   pages?: Prisma.PageListRelationFilter
   projectUsers?: Prisma.ProjectUserListRelationFilter
+  readerTypes?: Prisma.ReaderTypeListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -241,6 +242,7 @@ export type ProjectOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   pages?: Prisma.PageOrderByRelationAggregateInput
   projectUsers?: Prisma.ProjectUserOrderByRelationAggregateInput
+  readerTypes?: Prisma.ReaderTypeOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -260,6 +262,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   pages?: Prisma.PageListRelationFilter
   projectUsers?: Prisma.ProjectUserListRelationFilter
+  readerTypes?: Prisma.ReaderTypeListRelationFilter
 }, "id" | "slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -307,6 +310,7 @@ export type ProjectCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
   pages?: Prisma.PageCreateNestedManyWithoutProjectInput
   projectUsers?: Prisma.ProjectUserCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -322,6 +326,7 @@ export type ProjectUncheckedCreateInput = {
   createdAt?: Date | string
   pages?: Prisma.PageUncheckedCreateNestedManyWithoutProjectInput
   projectUsers?: Prisma.ProjectUserUncheckedCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -337,6 +342,7 @@ export type ProjectUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
   pages?: Prisma.PageUpdateManyWithoutProjectNestedInput
   projectUsers?: Prisma.ProjectUserUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -352,6 +358,7 @@ export type ProjectUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pages?: Prisma.PageUncheckedUpdateManyWithoutProjectNestedInput
   projectUsers?: Prisma.ProjectUserUncheckedUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -516,6 +523,20 @@ export type ProjectUpdateOneRequiredWithoutProjectUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutProjectUsersInput, Prisma.ProjectUpdateWithoutProjectUsersInput>, Prisma.ProjectUncheckedUpdateWithoutProjectUsersInput>
 }
 
+export type ProjectCreateNestedOneWithoutReaderTypesInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutReaderTypesInput, Prisma.ProjectUncheckedCreateWithoutReaderTypesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutReaderTypesInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutReaderTypesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutReaderTypesInput, Prisma.ProjectUncheckedCreateWithoutReaderTypesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutReaderTypesInput
+  upsert?: Prisma.ProjectUpsertWithoutReaderTypesInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutReaderTypesInput, Prisma.ProjectUpdateWithoutReaderTypesInput>, Prisma.ProjectUncheckedUpdateWithoutReaderTypesInput>
+}
+
 export type ProjectCreateWithoutUserInput = {
   id?: string
   title: string
@@ -528,6 +549,7 @@ export type ProjectCreateWithoutUserInput = {
   createdAt?: Date | string
   pages?: Prisma.PageCreateNestedManyWithoutProjectInput
   projectUsers?: Prisma.ProjectUserCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutUserInput = {
@@ -542,6 +564,7 @@ export type ProjectUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   pages?: Prisma.PageUncheckedCreateNestedManyWithoutProjectInput
   projectUsers?: Prisma.ProjectUserUncheckedCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutUserInput = {
@@ -598,6 +621,7 @@ export type ProjectCreateWithoutPagesInput = {
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
   projectUsers?: Prisma.ProjectUserCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutPagesInput = {
@@ -612,6 +636,7 @@ export type ProjectUncheckedCreateWithoutPagesInput = {
   createdBy: string
   createdAt?: Date | string
   projectUsers?: Prisma.ProjectUserUncheckedCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutPagesInput = {
@@ -642,6 +667,7 @@ export type ProjectUpdateWithoutPagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
   projectUsers?: Prisma.ProjectUserUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutPagesInput = {
@@ -656,6 +682,7 @@ export type ProjectUncheckedUpdateWithoutPagesInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projectUsers?: Prisma.ProjectUserUncheckedUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutProjectUsersInput = {
@@ -670,6 +697,7 @@ export type ProjectCreateWithoutProjectUsersInput = {
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
   pages?: Prisma.PageCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutProjectUsersInput = {
@@ -684,6 +712,7 @@ export type ProjectUncheckedCreateWithoutProjectUsersInput = {
   createdBy: string
   createdAt?: Date | string
   pages?: Prisma.PageUncheckedCreateNestedManyWithoutProjectInput
+  readerTypes?: Prisma.ReaderTypeUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutProjectUsersInput = {
@@ -714,6 +743,7 @@ export type ProjectUpdateWithoutProjectUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
   pages?: Prisma.PageUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutProjectUsersInput = {
@@ -728,6 +758,83 @@ export type ProjectUncheckedUpdateWithoutProjectUsersInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pages?: Prisma.PageUncheckedUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutReaderTypesInput = {
+  id?: string
+  title: string
+  slug: string
+  description?: string | null
+  frontendUrl?: string | null
+  backendUrl?: string | null
+  isActive?: boolean
+  welcomeScreenEnabled?: boolean
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProjectsInput
+  pages?: Prisma.PageCreateNestedManyWithoutProjectInput
+  projectUsers?: Prisma.ProjectUserCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutReaderTypesInput = {
+  id?: string
+  title: string
+  slug: string
+  description?: string | null
+  frontendUrl?: string | null
+  backendUrl?: string | null
+  isActive?: boolean
+  welcomeScreenEnabled?: boolean
+  createdBy: string
+  createdAt?: Date | string
+  pages?: Prisma.PageUncheckedCreateNestedManyWithoutProjectInput
+  projectUsers?: Prisma.ProjectUserUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutReaderTypesInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutReaderTypesInput, Prisma.ProjectUncheckedCreateWithoutReaderTypesInput>
+}
+
+export type ProjectUpsertWithoutReaderTypesInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutReaderTypesInput, Prisma.ProjectUncheckedUpdateWithoutReaderTypesInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutReaderTypesInput, Prisma.ProjectUncheckedCreateWithoutReaderTypesInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutReaderTypesInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutReaderTypesInput, Prisma.ProjectUncheckedUpdateWithoutReaderTypesInput>
+}
+
+export type ProjectUpdateWithoutReaderTypesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontendUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backendUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  welcomeScreenEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
+  pages?: Prisma.PageUpdateManyWithoutProjectNestedInput
+  projectUsers?: Prisma.ProjectUserUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutReaderTypesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frontendUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backendUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  welcomeScreenEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pages?: Prisma.PageUncheckedUpdateManyWithoutProjectNestedInput
+  projectUsers?: Prisma.ProjectUserUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyUserInput = {
@@ -754,6 +861,7 @@ export type ProjectUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pages?: Prisma.PageUpdateManyWithoutProjectNestedInput
   projectUsers?: Prisma.ProjectUserUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -768,6 +876,7 @@ export type ProjectUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pages?: Prisma.PageUncheckedUpdateManyWithoutProjectNestedInput
   projectUsers?: Prisma.ProjectUserUncheckedUpdateManyWithoutProjectNestedInput
+  readerTypes?: Prisma.ReaderTypeUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -790,11 +899,13 @@ export type ProjectUncheckedUpdateManyWithoutUserInput = {
 export type ProjectCountOutputType = {
   pages: number
   projectUsers: number
+  readerTypes: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pages?: boolean | ProjectCountOutputTypeCountPagesArgs
   projectUsers?: boolean | ProjectCountOutputTypeCountProjectUsersArgs
+  readerTypes?: boolean | ProjectCountOutputTypeCountReaderTypesArgs
 }
 
 /**
@@ -821,6 +932,13 @@ export type ProjectCountOutputTypeCountProjectUsersArgs<ExtArgs extends runtime.
   where?: Prisma.ProjectUserWhereInput
 }
 
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountReaderTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReaderTypeWhereInput
+}
+
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -836,6 +954,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   pages?: boolean | Prisma.Project$pagesArgs<ExtArgs>
   projectUsers?: boolean | Prisma.Project$projectUsersArgs<ExtArgs>
+  readerTypes?: boolean | Prisma.Project$readerTypesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -885,6 +1004,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   pages?: boolean | Prisma.Project$pagesArgs<ExtArgs>
   projectUsers?: boolean | Prisma.Project$projectUsersArgs<ExtArgs>
+  readerTypes?: boolean | Prisma.Project$readerTypesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -900,6 +1020,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     user: Prisma.$UserPayload<ExtArgs>
     pages: Prisma.$PagePayload<ExtArgs>[]
     projectUsers: Prisma.$ProjectUserPayload<ExtArgs>[]
+    readerTypes: Prisma.$ReaderTypePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1309,6 +1430,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   pages<T extends Prisma.Project$pagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projectUsers<T extends Prisma.Project$projectUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$projectUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  readerTypes<T extends Prisma.Project$readerTypesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$readerTypesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReaderTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1794,6 +1916,30 @@ export type Project$projectUsersArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ProjectUserScalarFieldEnum | Prisma.ProjectUserScalarFieldEnum[]
+}
+
+/**
+ * Project.readerTypes
+ */
+export type Project$readerTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReaderType
+   */
+  select?: Prisma.ReaderTypeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReaderType
+   */
+  omit?: Prisma.ReaderTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReaderTypeInclude<ExtArgs> | null
+  where?: Prisma.ReaderTypeWhereInput
+  orderBy?: Prisma.ReaderTypeOrderByWithRelationInput | Prisma.ReaderTypeOrderByWithRelationInput[]
+  cursor?: Prisma.ReaderTypeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReaderTypeScalarFieldEnum | Prisma.ReaderTypeScalarFieldEnum[]
 }
 
 /**
